@@ -1,0 +1,89 @@
+.mkp-chrome-bottom {
+    position: absolute;
+    padding: 0 12px;
+    width: 100%;
+    text-shadow: 0 0 2px rgba(0, 0, 0, .5);
+    bottom: 0;
+    height: 41px;
+    z-index: 1000;
+    text-align: left;
+    direction: ltr;
+    display: none;
+    background: rgba(0, 0, 0, .5);
+    box-sizing: border-box;
+    &.active {
+        display: block;
+    }
+    .mkp-chrome-controls {
+        display: flex;
+        justify-content: space-between;
+        height: 36px;
+        .mkp-left-controls {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            .mkp-button {
+                cursor: pointer;
+                img {
+                    width: 24px;
+                }
+            }
+            .mkp-play-button {
+                background: inherit;
+                border: none;
+                outline: none;
+            }
+            .mkp-volume {
+                .mkp-button {
+                    background: none;
+                    border: none;
+                    outline: none;
+                }
+            }
+            .mkp-time-display {
+                font-size: 109%;
+                display: inline-block;
+                vertical-align: top;
+                padding: 0 5px;
+                white-space: nowrap;
+                line-height: 35px;
+                span {
+                    color: #ddd;
+                }
+                .mkp-time-current, .mkp-time-duration {
+                    width: 32px;
+                    display: inline-block;
+                }
+            }
+        }
+        .mkp-left-controlsspan {
+            display: inline-flex;
+            flex-direction: row;
+        }
+        .mkp-right-controls {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            .mkp-settings-button, .mkp-size-button, .mkp-fullscreen-button {
+                cursor: pointer;
+                background: none;
+                border: none;
+                outline: none;
+                img {
+                    width: 21px;
+                }
+            }
+            .mkp-fullscreen-button {
+                background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAABCklEQVRYR+2XOw7CMBBEZ1rOwEHooKRMSw4D4TJQIloqaDgJZ6BkkaVEihI7a4dYCtKm9Honz+PfmpjZx5nxwIC0GfE6JCJbACs1max8fUTE297p+yR56+b3gESkAHDRYFycpC/ftX1i8gEUJK/tvj5BN7pDjOAEQBXJYwrQA8A9BMdxU7YBsK41k4GOoZ/GOBhYX86RvQGFHBQRc2hweZlD2u5LdkgTzB23215z2Bz6f4fq4qopP3Jcru3ypqev1UMGZA5pa9Qc+tWh3EV+8rYfPFh9zyCXICKinch1PApoB+AUIzgBUEnyrL3LFgBKAEsNauS7rJF9uYGTfA8CaRC541Z+aA7PzqEvH1fZJdb0wOQAAAAASUVORK5CYII=);
+                background-repeat: no-repeat !important;
+                background-size: 24px !important;
+                width: 35px;
+                height: 35px;
+                background-position: center !important;
+                background-origin: border-box !important;
+                background-clip: border-box !important;
+                margin-top: -2px;
+            }
+        }
+    }
+}

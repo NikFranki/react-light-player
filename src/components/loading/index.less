@@ -1,0 +1,27 @@
+.rotate-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    .container {
+        position: fixed;
+        top: 50%;
+        left: 150px;
+        transform: translate(-50%, -50%);
+        z-index: 999;
+    }
+    .loader {
+        animation: spin 1s linear infinite;
+        border: 5px solid rgb(80, 108, 144);
+        border-top: 5px solid #fff;
+        border-radius: 50%;
+        height: 25px;
+        width: 25px;
+    }
+}
+
+@keyframes spin {
+    to {
+        border-top-color: #fff;
+        transform: rotate(360deg);
+    }
+}

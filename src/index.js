@@ -1,0 +1,1 @@
+export { default as ReactLightPlayer } from './components/player';
