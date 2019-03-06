@@ -59,7 +59,7 @@ MIT
 ## Performance
 ![image][logo]
 
-[logo]: http://qiniu.sevenyuan.cn/react-light-player.gif
+[logo]: http://qiniu.sevenyuan.cn/player.gif
 
 [license]: LICENSE
 
