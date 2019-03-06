@@ -1,6 +1,6 @@
 {
   "name": "react-light-player",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "An Light Web Player",
   "author": "",
   "license": "MIT",
@@ -19,11 +19,13 @@
     "test": "jest --colors --coverage",
     "build-dev": "rm -rf build && webpack --config webpack.dev.js --env.NODE_ENV=local --env.production --progress",
     "build-prod": "rm -rf build && cross-env NODE_ENV=production webpack --config webpack.prod.js --progress",
-    "build-npm": "rm -rf dist && && npm run upgrade-version && cross-env NODE_ENV=npm webpack --config webpack.npm.js --progress",
+    "build-npm": "rm -rf dist && npm run upgrade-version && cross-env NODE_ENV=npm webpack --config webpack.npm.js --progress",
     "build-npm-test": "rm -rf dist && cross-env NODE_ENV=npm webpack --config webpack.npm.test.js --progress",
     "transpile": "npm run build-npm",
     "prepublishOnly": "npm run transpile",
-    "upgrade-version": "gulp"
+    "upgrade-version": "gulp",
+    "deploy": "gh-pages -d build/prod",
+    "publish-demo": "npm run build-prod && npm run deploy"
   },
   "repository": {
     "type": "git",
