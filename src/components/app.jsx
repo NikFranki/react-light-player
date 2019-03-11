@@ -8,7 +8,7 @@ const App = () => (
             width={640}
             height={360}
             centered={true}
-            autoPlay={true}
+            autoPlay={false}
             src='http://qiniu.sevenyuan.cn/POP_STARS.mp4'
         />
     </div>

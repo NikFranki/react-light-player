@@ -46,19 +46,17 @@ export default class Player extends Component {
     }
 
     resize = () => {
-        this.refs.video.handleProgress();
         const paddingLeft = parseInt(window.getComputedStyle(this.refs.mkpChromeBottom.refs.mkpChromeBottom).paddingLeft.replace(/px/, ''));
         const paddingRight = parseInt(window.getComputedStyle(this.refs.mkpChromeBottom.refs.mkpChromeBottom).paddingRight.replace(/px/, ''));
         const sliderWidth = this.props.width - paddingLeft - paddingRight;
         const innerWidth = this.refs.mkpChromeBottom.refs.processSlider.refs.inner.getBoundingClientRect().width;
         const bodyWidth = document.body.clientWidth - paddingLeft - paddingRight;
-        const isFullScreen = document.body.clientWidth === this.refs.video.refs.video.getBoundingClientRect().width;
-        if (!isFullScreen) {
-            setTimeout(() => {
-                const position = parseFloat(innerWidth / sliderWidth);
-                this.refs.mkpChromeBottom.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
-            }, 0);
-        } else {
+        const videoWidth = this.refs.video.refs.video.getBoundingClientRect().width;
+        const isFullScreen = document.body.clientWidth === videoWidth;
+        const isPressCancelFullscreen = this.refs.mkpChromeBottom.refs.fullscreenBtn.getAttribute('aria-press-cancel') === 'true';
+        // 仅当全屏模式下，按esc退出全屏，才执行设置进度
+        if (!this.state.isTheaterMode && !isFullScreen && !isPressCancelFullscreen) {
+            this.refs.video.handleProgress();
             setTimeout(() => {
                 const position = parseFloat(innerWidth / bodyWidth);
                 this.refs.mkpChromeBottom.refs.processSlider.setSliderInnerWidth(position, sliderWidth);

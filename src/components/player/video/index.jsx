@@ -114,6 +114,10 @@ export default class Video extends Component {
         processSlider.setSliderInnerLoadedWidth(position, sliderWidth);
     }
 
+    handleEroor = () => {
+        console.log('load error');
+    }
+
     render() {
         const { 
             src,
@@ -139,6 +143,7 @@ export default class Video extends Component {
                     onLoadedData={this.handleLoadedData}
                     onTimeUpdate={this.handleTimeupdate}
                     onEnded={this.handleEnded}
+                    onError={this.handleEroor}
                     onProgress={this.handleProgress}
                     autoPlay={this.props.autoPlay}
                     // poster="https://addpipe.com/sample_vid/poster.png"

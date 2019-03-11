@@ -128,13 +128,47 @@ export default class ControlBar extends Component {
         return usePrefixMethod;
     }
 
+    calReleaseWidth = () => {
+        const paddingLeft = parseInt(window.getComputedStyle(this.refs.mkpChromeBottom).paddingLeft.replace(/px/, ''));
+        const paddingRight = parseInt(window.getComputedStyle(this.refs.mkpChromeBottom).paddingRight.replace(/px/, ''));
+        const sliderWidth = this.props.width - paddingLeft - paddingRight;
+        const innerWidth = this.refs.processSlider.refs.inner.getBoundingClientRect().width;
+        const bodyWidth = document.body.clientWidth - paddingLeft - paddingRight;
+        return {
+            innerWidth,
+            sliderWidth,
+            bodyWidth
+        };
+    }
+
     // fullscreen or exit fullscreen
     reqFullscreenOrExitFullscreen = () => {
+        const { video, isTheaterMode } = this.props;
+        video.handleProgress();
         const isFullScreen = this.runPrefixMethod(document, 'FullScreen') || this.runPrefixMethod(document, 'IsFullScreen');
+        const {
+            innerWidth,
+            sliderWidth,
+            bodyWidth
+        } = this.calReleaseWidth();
         if (isFullScreen) {
             this.runPrefixMethod(document, 'CancelFullScreen');
+            setTimeout(() => {
+                this.refs.fullscreenBtn.setAttribute('aria-press-cancel', 'true');
+                const position = parseFloat(innerWidth / bodyWidth);
+                if (isTheaterMode) {
+                    this.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
+                } else {
+                    this.refs.processSlider.setSliderInnerWidth(position, sliderWidth);
+                }
+            }, 0);
         } else {
+            this.refs.fullscreenBtn.setAttribute('aria-press-cancel', '');
             this.runPrefixMethod(document.documentElement, 'RequestFullScreen');
+            setTimeout(() => {
+                const position = isTheaterMode ? parseFloat(innerWidth / bodyWidth) : parseFloat(innerWidth / sliderWidth);
+                this.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
+            }, 0);
         }
     }
 
@@ -147,9 +181,6 @@ export default class ControlBar extends Component {
 
     // Theater Mode
     handleTheaterMode = () => {
-        if (this.props.onResize) {
-            this.props.onResize();
-        }
         const { player, video, isTheaterMode } = this.props;
         if (isTheaterMode) {
             player.classList.remove('theater-mode');
@@ -160,6 +191,23 @@ export default class ControlBar extends Component {
         }
         if (this.props.onTheaterMode) {
             this.props.onTheaterMode();
+        }
+        video.handleProgress();
+        const {
+            innerWidth,
+            sliderWidth,
+            bodyWidth
+        } = this.calReleaseWidth();
+        if (!isTheaterMode) {
+            setTimeout(() => {
+                const position = parseFloat(innerWidth / sliderWidth);
+                this.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
+            }, 0);
+        } else {
+            setTimeout(() => {
+                const position = parseFloat(innerWidth / bodyWidth);
+                this.refs.processSlider.setSliderInnerWidth(position, sliderWidth);
+            }, 0);
         }
     }
 
