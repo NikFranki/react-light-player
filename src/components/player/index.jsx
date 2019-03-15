@@ -7,7 +7,7 @@ import Video from './video';
 import ControlBar from './control-bar';
 import './index.less';
 
-export default class Player extends Component {
+export default class ReactLightPlayer extends Component {
 
     static defaultProps = {
         width: 500,
@@ -15,13 +15,18 @@ export default class Player extends Component {
         centered: false,
         disablePrev: false,
         disableNext: false,
+        disableSettings: false,
         disableTheaterMode: false,
+        disableFullscreenMode: false,
         autoPlay: false,
         src: [
             { title: 'pop star', src: 'http://qiniu.sevenyuan.cn/POP_STARS.mp4'},
             { title: 'league', src: 'http://qiniu.sevenyuan.cn/2019.mp4'},
         ] || 'http://video.pearvideo.com/mp4/short/20170414/cont-1064146-10369519-ld.mp4',
-        speeds: ['0.25', '0.5', '0.75', '正常', '1.25', '1.75', '2']
+        speeds: ['0.25', '0.5', '0.75', '正常', '1.25', '1.75', '2'],
+        preload: 'auto',
+        poster: '',
+        className: '',
     };
 
     state = {
@@ -45,35 +50,14 @@ export default class Player extends Component {
         }, 7000);
     }
 
-    resize = () => {
-        const paddingLeft = parseInt(window.getComputedStyle(this.refs.mkpChromeBottom.refs.mkpChromeBottom).paddingLeft.replace(/px/, ''));
-        const paddingRight = parseInt(window.getComputedStyle(this.refs.mkpChromeBottom.refs.mkpChromeBottom).paddingRight.replace(/px/, ''));
-        const sliderWidth = this.props.width - paddingLeft - paddingRight;
-        const innerWidth = this.refs.mkpChromeBottom.refs.processSlider.refs.inner.getBoundingClientRect().width;
-        const bodyWidth = document.body.clientWidth - paddingLeft - paddingRight;
-        const videoWidth = this.refs.video.refs.video.getBoundingClientRect().width;
-        const isFullScreen = document.body.clientWidth === videoWidth;
-        const isPressCancelFullscreen = this.refs.mkpChromeBottom.refs.fullscreenBtn.getAttribute('aria-press-cancel') === 'true';
-        // 仅当全屏模式下，按esc退出全屏，才执行设置进度
-        if (!this.state.isTheaterMode && !isFullScreen && !isPressCancelFullscreen) {
-            this.refs.video.handleProgress();
-            setTimeout(() => {
-                const position = parseFloat(innerWidth / bodyWidth);
-                this.refs.mkpChromeBottom.refs.processSlider.setSliderInnerWidth(position, sliderWidth);
-            }, 0);
-        }
-    }
-    
     componentDidMount() {
         MyEmmiter.trigger('changeMessage', 'message');
         this.mkpChromeBottomControl();
         this.refs.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
-        window.addEventListener('resize', this.resize, false);
     }
     
     componentWillUnmount() {
         this.refs.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
-        window.removeEventListener('resize', this.resize, false);
     }
 
     haneleSettings = () => {
@@ -125,16 +109,28 @@ export default class Player extends Component {
         });
     }
 
+    handleFullScreen = (isFullScreen) =>{
+        if (this.props.onFullscreenChange) {
+            this.props.onFullscreenChange(isFullScreen);
+        }
+    }
+
     render() {
         const {
+            className,
             width,
             height,
             centered,
             src,
+            volume,
             speeds,
+            preload,
+            poster,
             disablePrev,
             disableNext,
-            disableTheaterMode
+            disableSettings,
+            disableTheaterMode,
+            disableFullscreenMode
         } = this.props;
 
         const { 
@@ -157,19 +153,23 @@ export default class Player extends Component {
         };
 
         return (
-            <div className="player-wrapper" style={centered && !isTheaterMode ? wrapperStyle : {}}>
+            <div className={`player-wrapper ${className}`} style={centered && !isTheaterMode ? wrapperStyle : {}}>
                 <div style={{width: width, height: height}} ref="player" id="player" className="player style-scope ytd-watch-flexy">
                     <div id="player-container" className="player-container style-scope mkd-watch-flexy">
                         <div id="container" className="ytd-player style-scope ytd-player">
                             <div 
                                 id="movie_player"
                                 className="html5-video-player mkp-hide-info-bar mkp-fullscreen mkp-large-width-mode mkp-big-mode" 
-                                aria-label="YouTube 视频播放器"
+                                aria-label="player"
                                 >
                                 <MkpChromeTop
                                     ref="mkpChromeTop"
-                                    src={src}
-                                    curPlayIndex={curPlayIndex}
+                                    title={
+                                        src instanceof Array ?
+                                            src[curPlayIndex]['title']
+                                        :
+                                        (this.props.title || '')
+                                    }
                                 />
                                 <MkpPopup
                                     ref="mkpPopup"
@@ -186,11 +186,14 @@ export default class Player extends Component {
                                     disableNext={disableNext}
                                     src={src}
                                     width={width}
+                                    volume={volume}
                                     isPlay={isPlay}
                                     currentTime={currentTime}
                                     duration={duration}
                                     curPlayIndex={curPlayIndex}
+                                    disableSettings={disableSettings}
                                     disableTheaterMode={disableTheaterMode}
+                                    disableFullscreenMode={disableFullscreenMode}
                                     isTheaterMode={isTheaterMode}
                                     player={this.refs.player}
                                     video={this.refs.video}
@@ -199,12 +202,15 @@ export default class Player extends Component {
                                     onTheaterMode={this.handleTheaterMode}
                                     onResize={this.resize}
                                     onSetProcess={this.setProcess}
+                                    onFullscreenChange={this.handleFullScreen}
                                 />
                                 <MkpBezel ref="mkp-bazel-text" />
                                 <Video
                                     ref="video"
                                     src={src}
                                     speeds={speeds}
+                                    preload={preload}
+                                    poster={poster}
                                     speedIndex={speedIndex}
                                     mkpPopup={this.refs.mkpPopup}
                                     mkpChromeBottom={this.refs.mkpChromeBottom}

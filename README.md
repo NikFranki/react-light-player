@@ -20,27 +20,33 @@ $ npm install react-light-player
 Usage
 ----
 ```js
-<Player
-    width={640}
-    height={360}
-    centered={true}
-    autoPlay={true}
+<ReactLightPlayer
+    title=""
+    width={600}
+    height={337}
+    centered={false}
+    autoPlay={false}
+    title="pop stars"
     src='http://qiniu.sevenyuan.cn/POP_STARS.mp4'
 />
 ```
+If you want to know more, please click on the link below
+[more use](docs/advanced-use.md)
 
 Example
 -----
 ```js
-import React, { Component } from 'react';
+import ReactLightPlayer from 'react-light-player';
 class App extends Component {
   render() {
     return (
-        <Player
-            width={640}
-            height={360}
-            centered={true}
-            autoPlay={true}
+        <ReactLightPlayer
+            title=""
+            width={600}
+            height={337}
+            centered={false}
+            autoPlay={false}
+            title="pop stars"
             src='http://qiniu.sevenyuan.cn/POP_STARS.mp4'
         />
     )
@@ -52,12 +58,12 @@ class App extends Component {
 
 react-light-player is a free and open source library, and we appreciate any help you're willing to give - whether it's fixing bugs, improving documentation, or suggesting new features. Check out the [contributing guide][contributing] for more!
 
+## Performance
+![image][logo]
+
 ## [License][license]
 
 MIT
-
-## Performance
-![image][logo]
 
 [logo]: http://qiniu.sevenyuan.cn/play.png
 

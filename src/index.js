@@ -1,1 +1,1 @@
-export { default as ReactLightPlayer } from './components/player';
+exports.default = require('./components/player');

@@ -14,9 +14,11 @@ const entry = isNpmPublish ? './src/index.js' : {
     'index': ['./src/index.jsx']
 };
 const output = isNpmPublish ? {
-    filename: 'bundle.js',
+    filename: 'ReactLightPlayer.js',
     path: getPath(basePath),
-    libraryTarget: 'commonjs2'
+    library: 'ReactLightPlayer',
+    libraryTarget: 'commonjs2',
+    libraryExport: 'default'
 } : {
     path: getPath(basePath),
     filename: 'js/[name].js',

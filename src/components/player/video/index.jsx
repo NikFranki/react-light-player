@@ -122,6 +122,8 @@ export default class Video extends Component {
         const { 
             src,
             curPlayIndex,
+            preload,
+            poster
         } = this.props;
 
         const { showLoading } = this.state;
@@ -146,8 +148,8 @@ export default class Video extends Component {
                     onError={this.handleEroor}
                     onProgress={this.handleProgress}
                     autoPlay={this.props.autoPlay}
-                    // poster="https://addpipe.com/sample_vid/poster.png"
-                    preload="auto"
+                    poster={poster}
+                    preload={preload}
                 >
                     your browser is not supported video
                 </video>

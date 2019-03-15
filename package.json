@@ -1,6 +1,6 @@
 {
   "name": "react-light-player",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "An Light Web Player",
   "author": "",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "react-component",
     "components"
   ],
-  "main": "dist/bundle.js",
+  "main": "dist/ReactLightPlayer.js",
   "module": "src/index.js",
   "files": [
     "dist"

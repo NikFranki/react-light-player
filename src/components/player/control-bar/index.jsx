@@ -10,10 +10,49 @@ export default class ControlBar extends Component {
         isPlay: this.props.isPlay || false,
     };
 
+    handleFullscreenChange = (type) => {
+        ['', 'moz', 'webkit', 'ms'].forEach(prefix => {
+            const method = prefix + 'fullscreenchange';
+            const emiter = `${type}EventListener`
+            document[emiter](method, () => {
+                const { isTheaterMode, onFullscreenChange } = this.props;
+                const isFullScreen = this.runPrefixMethod(document, 'FullScreen') || this.runPrefixMethod(document, 'IsFullScreen');
+                const {
+                    innerWidth,
+                    sliderWidth,
+                    bodyWidth
+                } = this.calReleaseWidth();
+                if (onFullscreenChange) {
+                    onFullscreenChange(isFullScreen);
+                }
+                if (isFullScreen) {
+                    setTimeout(() => {
+                        const position = isTheaterMode ? parseFloat(innerWidth / bodyWidth) : parseFloat(innerWidth / sliderWidth);
+                        this.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
+                    }, 0);
+                } else {
+                    setTimeout(() => {
+                        const position = parseFloat(innerWidth / bodyWidth);
+                        if (isTheaterMode) {
+                            this.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
+                        } else {
+                            this.refs.processSlider.setSliderInnerWidth(position, sliderWidth);
+                        }
+                    }, 0);
+                }
+            });
+        });
+    }
+
     componentDidMount() {
+        this.handleFullscreenChange('add');
         MyEmmiter.listen('changeMessage', (message) => {
             console.log(message);
         });
+    }
+
+    componentWillUnmount() {
+        this.handleFullscreenChange('remove');
     }
 
     // prev
@@ -143,32 +182,15 @@ export default class ControlBar extends Component {
 
     // fullscreen or exit fullscreen
     reqFullscreenOrExitFullscreen = () => {
-        const { video, isTheaterMode } = this.props;
+        const { video } = this.props;
         video.handleProgress();
         const isFullScreen = this.runPrefixMethod(document, 'FullScreen') || this.runPrefixMethod(document, 'IsFullScreen');
-        const {
-            innerWidth,
-            sliderWidth,
-            bodyWidth
-        } = this.calReleaseWidth();
+        
         if (isFullScreen) {
             this.runPrefixMethod(document, 'CancelFullScreen');
-            setTimeout(() => {
-                this.refs.fullscreenBtn.setAttribute('aria-press-cancel', 'true');
-                const position = parseFloat(innerWidth / bodyWidth);
-                if (isTheaterMode) {
-                    this.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
-                } else {
-                    this.refs.processSlider.setSliderInnerWidth(position, sliderWidth);
-                }
-            }, 0);
         } else {
-            this.refs.fullscreenBtn.setAttribute('aria-press-cancel', '');
+            // this.refs.fullscreenBtn.setAttribute('aria-press-cancel', '');
             this.runPrefixMethod(document.documentElement, 'RequestFullScreen');
-            setTimeout(() => {
-                const position = isTheaterMode ? parseFloat(innerWidth / bodyWidth) : parseFloat(innerWidth / sliderWidth);
-                this.refs.processSlider.setSliderInnerWidth(position, bodyWidth);
-            }, 0);
         }
     }
 
@@ -270,21 +292,21 @@ export default class ControlBar extends Component {
     }
 
     mkpRightControls = () => {
-        const { disableTheaterMode } = this.props;
+        const { disableSettings, disableTheaterMode, disableFullscreenMode } = this.props;
         const { isTheaterMode } = this.state;
         return (
             <div className="mkp-right-controls">
                 {/* settings */}
-                <button className="mkp-button mkp-settings-button mkp-hd-quality-badge" onClick={this.haneleSettings}>
+                {!disableSettings && <button className="mkp-button mkp-settings-button mkp-hd-quality-badge" onClick={this.haneleSettings}>
                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAACsElEQVRYR92Yy4tPcRjGP49rM1ko9i4xITQLs3H5C6zGFBulGJFyidxKM4wSuRQWk5CNDTHZ+A9YCCVynZGdlaTccn301hkdM+f2Oxr98m7O5r083+f73r5HNJmoyfDw/wCyfQbYmsPwGUnb67BfmyHbL4HZOUGHJM39Z4Bsjwe+FwT8AUyWFN+GpBZDthcAj0sitUkabAgN5Ce17aB8JXBZ0pthx7bHAYeAAyXBQqdP0s+U7XRgFXBN0tss+1yGbN8FlgDfgBvAOeA9cAFYVPHkj4CNwBRgE9AJTADuSeqoDMh2N3C+YtC6at2SLo40HsWQ7anAKyC+YynvgFmS4vtbsgD1A5vHEknKd7+kLbmAbC8GHhQlew7Q6EmRGzMaPIiBdkkPh+3+YMh2T1JBVfxGsh8D4pSvw8D2TGADsC8BWMVPr6S+PEAtwCVgTYmnr0BH+mRpfdvtwB1gUomfK8A6SV8yAaX6xTbgFBAdOUv2SDpeFMz2fuBIjk6wu0vS2dIqS4GKBnY9x2GrpM8lgFqBjzk6nZKit42Sosa4FLidYfNM0vwqyWE7RsecDN3lkrJ8F46OZcCtvwT0Asia+iskZfkuBJR3ZTGbWiRFYueK7SiQTzkKXZIGKl+Z7ViuThYk9W5JJ0oA7QWO5ujE6rKzNKmTU1Ut+2hoT7MC2l4I3P/rsrfdCxyskrDAh2iCkq6m9W2vTnpZVFkV6ZF0eFhxZKeuMzpiOA4BE5PR0chQLh4dgdJ28wzXBFBzrR8JqOZZ0FKjI2uFjXERVxq5VkVirVifLHv1V9iEpWlAFzBQc8mPyjmYseSvBW7mvUjqPoNilj0poWiepOdVaEzr1AXUXA/F5ErjIRAbYpYMSmprlJ3Qr8VQAqjoZ8NpSTv+KaA6warY1GaoivM6Ok0H6BcU3P0lNMevkgAAAABJRU5ErkJggg==" alt="settings" />
-                </button>
+                </button>}
                 {/* Theater Mode */}
                 {!disableTheaterMode && <button className="mkp-size-button mkp-button" onClick={this.handleTheaterMode} title={isTheaterMode ? 'default mode' : 'theater mode'}>
                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAA1klEQVRYR+2XTQrCMBBG36fgwp9DunPrCcQTuHXnIVUUUUcEG6qkpEKsKUy3TWYe75uSVBT2qDAeHCiViBv6ypCZLYE1MEttzPR+D6wkbap6b5GZ2QGYZGrWtsxR0rQJyNpWyblOUhDzaSgA1RflbF7VMrNoLwfqryEze8Z3D9NeG7S/zJADpb4yN9TC0AC4lTTUDhRLIxwdZuaGUoaGwLWkoXagfkf2ixO+qWb0Cvs6y87AqEsY4CRp3HTJ3wLzDqEuwE7SIgrUsZloO/+VTqXghnpn6AHp8K4l0J5iMQAAAABJRU5ErkJggg==" alt="theater" />
                 </button>}
                 {/* fullscreen */}
-                <button ref="fullscreenBtn" className="mkp-fullscreen-button mkp-button" onClick={this.reqFullscreenOrExitFullscreen}>
-                </button>
+                {!disableFullscreenMode && <button ref="fullscreenBtn" className="mkp-fullscreen-button mkp-button" onClick={this.reqFullscreenOrExitFullscreen}>
+                </button>}
             </div>
         );
     }
