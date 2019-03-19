@@ -27,11 +27,13 @@ export default class ReactLightPlayer extends Component {
         preload: 'auto',
         poster: '',
         className: '',
+        volume: 1,
     };
 
     state = {
         curPlayIndex: 0, // current play index
         isPlay: this.props.autoPlay || false, // false: pause true: play
+        isEnd: false,
         isTheaterMode: false,
         duration: 0,
         currentTime: 0,
@@ -44,9 +46,11 @@ export default class ReactLightPlayer extends Component {
         clearTimeout(this.timeouter);
         this.refs.mkpChromeBottom.refs.mkpChromeBottom.classList.add('active');
         this.refs.mkpChromeTop.refs.mkpChromeTop.classList.add('active');
+        this.refs.video.refs.video.style.cursor = "unset";
         this.timeouter = setTimeout(() => {
             this.refs.mkpChromeBottom.refs.mkpChromeBottom.classList.remove('active');
             this.refs.mkpChromeTop.refs.mkpChromeTop.classList.remove('active');
+            this.refs.video.refs.video.style.cursor = "none";
         }, 7000);
     }
 
@@ -89,6 +93,12 @@ export default class ReactLightPlayer extends Component {
 
     handleIsPlay = (isPlay) => {
         this.setState({isPlay});
+    }
+
+    handleIsEnd = (isEnd) => {
+        this.setState({
+            isEnd: isEnd
+        });
     }
 
     handleDuration = (duration) => {
@@ -136,6 +146,7 @@ export default class ReactLightPlayer extends Component {
         const { 
             isTheaterMode,
             isPlay,
+            isEnd,
             curPlayIndex,
             showSettingItems,
             autoPlay,
@@ -188,6 +199,7 @@ export default class ReactLightPlayer extends Component {
                                     width={width}
                                     volume={volume}
                                     isPlay={isPlay}
+                                    isEnd={isEnd}
                                     currentTime={currentTime}
                                     duration={duration}
                                     curPlayIndex={curPlayIndex}
@@ -198,6 +210,7 @@ export default class ReactLightPlayer extends Component {
                                     player={this.refs.player}
                                     video={this.refs.video}
                                     onCurPlayIndex={this.handleCurPlayIndex}
+                                    onIsEnd={this.handleIsEnd}
                                     onSettings={this.haneleSettings}
                                     onTheaterMode={this.handleTheaterMode}
                                     onResize={this.resize}
@@ -210,7 +223,9 @@ export default class ReactLightPlayer extends Component {
                                     src={src}
                                     speeds={speeds}
                                     preload={preload}
+                                    isEnd={isEnd}
                                     poster={poster}
+                                    volume={volume}
                                     speedIndex={speedIndex}
                                     mkpPopup={this.refs.mkpPopup}
                                     mkpChromeBottom={this.refs.mkpChromeBottom}
@@ -219,6 +234,7 @@ export default class ReactLightPlayer extends Component {
                                     autoPlay={autoPlay}
                                     curPlayIndex={curPlayIndex}
                                     onIsPlay={this.handleIsPlay}
+                                    onIsEnd={this.handleIsEnd}
                                     onDuration={this.handleDuration}
                                     onCurrentTime={this.handleCurrentTime}
                                 />

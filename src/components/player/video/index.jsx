@@ -4,7 +4,7 @@ import './index.less';
 
 export default class Video extends Component {
     state = {
-        isPlay: this.props.autoPlay || false,
+        isEnd: this.props.isEnd || false,
         showLoading: false,
         duration: 0,
         currentTime: 0,
@@ -48,6 +48,7 @@ export default class Video extends Component {
 
     // video start
     handleLoadStart = () => {
+        this.refs.video.volume = this.props.volume;
         this.setState({ showLoading: true });
     }
 
@@ -82,7 +83,7 @@ export default class Video extends Component {
         const { processSlider } = this.props.mkpChromeBottom.refs;
         if (this.state.isPlay) {
             const width = processSlider.refs.slider.getBoundingClientRect().width;
-            const position = parseFloat(this.state.currentTime / this.state.duration);
+            const position = parseFloat(this.refs.video.currentTime / this.state.duration);
             processSlider.setSliderInnerWidth(position, width);
             if (this.props.onCurrentTime) {
                 this.props.onCurrentTime(this.refs.video.currentTime);
@@ -95,15 +96,21 @@ export default class Video extends Component {
 
     // video play end
     handleEnded = () => {
-        const { autoPlay, mkpChromeBottom } = this.props;
+        const { autoPlay, mkpChromeBottom, onIsEnd } = this.props;
         if (autoPlay) {
             if (this.props.onCurrentTime) {
                 this.props.onCurrentTime(0);
             }
             this.setState({
                 currentTime: 0,
+                isPlay: false
             });
             mkpChromeBottom.handleNext();
+        } else {
+            if (onIsEnd) {
+                this.setState({ isPlay: false });
+                onIsEnd(true);
+            }
         }
     }
 
@@ -123,7 +130,8 @@ export default class Video extends Component {
             src,
             curPlayIndex,
             preload,
-            poster
+            poster,
+            isEnd
         } = this.props;
 
         const { showLoading } = this.state;
@@ -138,7 +146,8 @@ export default class Video extends Component {
                             :
                             src
                     }
-                    className="video-stream html5-main-video"
+                    // src="//mblock-how-tos.oss-cn-shenzhen.aliyuncs.com/9192612040f711e9aed94ba0a7494a91?type=video/mp4"
+                    className={`video-stream html5-main-video ${isEnd ? 'play-end' : '' }`}
                     onClick={this.playOrPauseVide}
                     onLoadStart={this.handleLoadStart}
                     onCanPlay={this.handleCanplay}
