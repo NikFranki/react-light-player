@@ -1,5 +1,5 @@
 import React from 'react';
-import Player from "../components/player";
+import Player from '../components/player';
 import './app.less';
 
 const App = () => (
@@ -9,9 +9,9 @@ const App = () => (
         centered={false}
         autoPlay={false}
         title="pop stars"
-        disableTheaterMode={true}
-        onFullscreenChange={(value) => console.log(value)}
-        src='http://qiniu.sevenyuan.cn/POP_STARS.mp4'
+        disableTheaterMode={false}
+        onFullscreenChange={value => console.log(value)}
+        src="http://qiniu.sevenyuan.cn/POP_STARS.mp4"
     />
 );
 

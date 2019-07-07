@@ -1,27 +1,31 @@
 import React, { Component } from 'react';
 import { Loading } from '../../loading';
+import cn from '../../../util/classname';
 import './index.less';
 
 export default class Video extends Component {
+    video = null;
+
     state = {
         isEnd: this.props.isEnd || false,
         showLoading: false,
         duration: 0,
         currentTime: 0,
         showLoading: false,
+        isVideoMode: false,
     };
 
-    resetPlay = (isPlay) => {
+    resetPlay = isPlay => {
         this.setState({
             duration: 0,
             currentTime: 0,
             isPlay,
         });
-    }
+    };
 
     getState = () => {
         return this.state;
-    }
+    };
 
     playOrPauseVide = () => {
         if (this.props.onIsPlay) {
@@ -30,69 +34,72 @@ export default class Video extends Component {
         const { mkpBazelText, mkpChromeBottom } = this.props;
         mkpBazelText.handlePlayStatus(!this.state.isPlay);
         mkpChromeBottom.setState({ isPlay: !this.state.isPlay });
-        mkpBazelText.refs['mkp-bazel-text'].classList.add('active');
+        mkpBazelText.setState({ isHide: false });
         let timer = setTimeout(() => {
-            mkpBazelText.refs['mkp-bazel-text'].classList.remove('active');
+            mkpBazelText.setState({ isHide: true });
             timer = null;
         }, 500);
         const { isPlay } = this.state;
-        if (isPlay) { // play
-            this.refs.video.pause();
-        } else { // pause
-            this.refs.video.play();
+        if (isPlay) {
+            // play
+            this.video.pause();
+        } else {
+            // pause
+            this.video.play();
         }
         this.setState({
-            isPlay: !this.state.isPlay
+            isPlay: !this.state.isPlay,
         });
-    }
+    };
 
     // video start
     handleLoadStart = () => {
-        this.refs.video.volume = this.props.volume;
+        this.video.volume = this.props.volume;
         this.setState({ showLoading: true });
-    }
+    };
 
     // handle can play
     handleCanplay = () => {
         if (this.props.onDuration) {
-            this.props.onDuration(this.refs.video.duration);
+            this.props.onDuration(this.video.duration);
         }
         const { speeds, speedIndex } = this.props;
         this.setState({
-            duration: this.refs.video.duration,
-            showLoading: false
+            duration: this.video.duration,
+            showLoading: false,
         });
-        this.refs.video.playbackRate = speeds[speedIndex] === '正常' ? 1 : parseFloat(speeds[speedIndex]);
-    }
+        this.video.playbackRate =
+            speeds[speedIndex] === '正常' ? 1 : parseFloat(speeds[speedIndex]);
+    };
 
     // video load data
     handleLoadedData = () => {
-        if (this.refs.video.readyState === 4) {
+        if (this.video.readyState === 4) {
             if (this.props.onDuration) {
-                this.props.onDuration(this.refs.video.duration);
+                this.props.onDuration(this.video.duration);
             }
             this.setState({
-                duration: this.refs.video.duration,
-                showLoading: false
+                duration: this.video.duration,
+                showLoading: false,
             });
         }
-    }
+    };
 
     // video play update
     handleTimeupdate = () => {
-        const { processSlider } = this.props.mkpChromeBottom.refs;
+        const { processSlider } = this.props.mkpChromeBottom;
         if (this.state.isPlay) {
-            const width = processSlider.refs.slider.getBoundingClientRect().width;
-            const position = parseFloat(this.refs.video.currentTime / this.state.duration);
+            const width = processSlider.slider.getBoundingClientRect().width;
+            const position = parseFloat(this.video.currentTime / this.state.duration);
             processSlider.setSliderInnerWidth(position, width);
             if (this.props.onCurrentTime) {
-                this.props.onCurrentTime(this.refs.video.currentTime);
+                this.props.onCurrentTime(this.video.currentTime);
             }
             this.setState({
-                currentTime: this.refs.video.currentTime
+                currentTime: this.video.currentTime,
             });
         }
-    }
+    };
 
     // video play end
     handleEnded = () => {
@@ -103,7 +110,7 @@ export default class Video extends Component {
             }
             this.setState({
                 currentTime: 0,
-                isPlay: false
+                isPlay: false,
             });
             mkpChromeBottom.handleNext();
         } else {
@@ -112,42 +119,37 @@ export default class Video extends Component {
                 onIsEnd(true);
             }
         }
-    }
+    };
 
     handleProgress = () => {
-        const { processSlider } = this.props.mkpChromeBottom.refs;
-        const sliderWidth = processSlider.refs.slider.getBoundingClientRect().width;
-        const position = parseFloat(this.refs.video.buffered.end(0) / this.refs.video.duration);
+        const { processSlider } = this.props.mkpChromeBottom;
+        const sliderWidth = processSlider.slider.getBoundingClientRect().width;
+        const position = parseFloat(this.video.buffered.end(0) / this.video.duration);
         processSlider.setSliderInnerLoadedWidth(position, sliderWidth);
-    }
+    };
 
     handleEroor = () => {
         console.log('load error');
-    }
+    };
 
     render() {
-        const { 
-            src,
-            curPlayIndex,
-            preload,
-            poster,
-            isEnd
-        } = this.props;
+        const { src, curPlayIndex, preload, poster, isEnd } = this.props;
+
+        const { isVideoMode } = this.state;
 
         const { showLoading } = this.state;
         return (
             <div className="html5-video-container">
                 <video
-                    ref="video"
-                    src={
-                        src instanceof Array
-                            ?
-                            src[curPlayIndex]['src']
-                            :
-                            src
-                    }
+                    ref={node => (this.video = node)}
+                    src={src instanceof Array ? src[curPlayIndex]['src'] : src}
                     // src="//mblock-how-tos.oss-cn-shenzhen.aliyuncs.com/9192612040f711e9aed94ba0a7494a91?type=video/mp4"
-                    className={`video-stream html5-main-video ${isEnd ? 'play-end' : '' }`}
+                    className={cn(
+                        'video-stream',
+                        'html5-main-video',
+                        `${isEnd ? 'play-end' : ''}`,
+                        `${isVideoMode ? 'video-mode' : ''}`,
+                    )}
                     onClick={this.playOrPauseVide}
                     onLoadStart={this.handleLoadStart}
                     onCanPlay={this.handleCanplay}
@@ -158,12 +160,11 @@ export default class Video extends Component {
                     onProgress={this.handleProgress}
                     autoPlay={this.props.autoPlay}
                     poster={poster}
-                    preload={preload}
-                >
+                    preload={preload}>
                     your browser is not supported video
                 </video>
                 {showLoading && <Loading />}
             </div>
-        )
+        );
     }
 }

@@ -2,14 +2,14 @@
     position: absolute;
     padding: 0 12px;
     width: 100%;
-    text-shadow: 0 0 2px rgba(0, 0, 0, .5);
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
     bottom: 0;
     height: 41px;
     z-index: 1000;
     text-align: left;
     direction: ltr;
     display: none;
-    background: rgba(0, 0, 0, .5);
+    background: rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
     user-select: none;
     &.active {
@@ -51,7 +51,8 @@
                 span {
                     color: #ddd;
                 }
-                .mkp-time-current, .mkp-time-duration {
+                .mkp-time-current,
+                .mkp-time-duration {
                     width: 32px;
                     display: inline-block;
                 }
@@ -65,7 +66,9 @@
             height: 100%;
             display: flex;
             align-items: center;
-            .mkp-settings-button, .mkp-size-button, .mkp-fullscreen-button {
+            .mkp-settings-button,
+            .mkp-size-button,
+            .mkp-fullscreen-button {
                 cursor: pointer;
                 background: none;
                 border: none;

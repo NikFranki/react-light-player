@@ -5,8 +5,7 @@ import './index.less';
 export const Loading = () => (
     <div className="rotate-area">
         <div className="container">
-            <div className="loader">
-            </div>
+            <div className="loader" />
         </div>
     </div>
 );
@@ -21,12 +20,12 @@ export default {
                 return;
             }
         }
-        ReactDOM.render(<Loading />, document.getElementById('loading'))
+        ReactDOM.render(<Loading />, document.getElementById('loading'));
     },
     hide: () => {
         if (!document.getElementById('loading')) {
             return;
         }
-        ReactDOM.unmountComponentAtNode(document.getElementById('loading'))
-    }
+        ReactDOM.unmountComponentAtNode(document.getElementById('loading'));
+    },
 };

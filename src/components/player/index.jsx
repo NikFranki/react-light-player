@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
-import MyEmmiter from "../../util/events";
+import MyEmmiter from '../../util/events';
 import MkpChromeTop from './chrometop';
 import MkpBezel from './bezel';
 import MkpPopup from './popup';
 import Video from './video';
 import ControlBar from './control-bar';
+import cn from '../../util/classname';
 import './index.less';
 
 export default class ReactLightPlayer extends Component {
+    video = null;
+    mkpChromeBottom = null;
+    mkpChromeTop = null;
+    player = null;
+    mkpPopup = null;
+    processSlider = null;
+    mkpBazelText = null;
 
     static defaultProps = {
         width: 500,
@@ -19,10 +27,11 @@ export default class ReactLightPlayer extends Component {
         disableTheaterMode: false,
         disableFullscreenMode: false,
         autoPlay: false,
-        src: [
-            { title: 'pop star', src: 'http://qiniu.sevenyuan.cn/POP_STARS.mp4'},
-            { title: 'league', src: 'http://qiniu.sevenyuan.cn/2019.mp4'},
-        ] || 'http://video.pearvideo.com/mp4/short/20170414/cont-1064146-10369519-ld.mp4',
+        src:
+            [
+                { title: 'pop star', src: 'http://qiniu.sevenyuan.cn/POP_STARS.mp4' },
+                { title: 'league', src: 'http://qiniu.sevenyuan.cn/2019.mp4' },
+            ] || 'http://video.pearvideo.com/mp4/short/20170414/cont-1064146-10369519-ld.mp4',
         speeds: ['0.25', '0.5', '0.75', '正常', '1.25', '1.75', '2'],
         preload: 'auto',
         poster: '',
@@ -39,91 +48,98 @@ export default class ReactLightPlayer extends Component {
         currentTime: 0,
         showSettingItems: false,
         autoPlay: this.props.autoPlay || false,
-        speedIndex: 3
+        speedIndex: 3,
+        isShowTheaterMode: false,
+    };
+
+    handleShowTheaterMode = isShow => {
+        this.setState({
+            isShowTheaterMode: isShow,
+        });
     };
 
     mkpChromeBottomControl = () => {
         clearTimeout(this.timeouter);
-        this.refs.mkpChromeBottom.refs.mkpChromeBottom.classList.add('active');
-        this.refs.mkpChromeTop.refs.mkpChromeTop.classList.add('active');
-        this.refs.video.refs.video.style.cursor = "unset";
+        this.mkpChromeBottom.setState({ isShowMkpChromeBottom: true });
+        this.mkpChromeTop.setState({ isShowMkpChromeTop: true });
+        this.video.video.style.cursor = 'unset';
         this.timeouter = setTimeout(() => {
-            this.refs.mkpChromeBottom.refs.mkpChromeBottom.classList.remove('active');
-            this.refs.mkpChromeTop.refs.mkpChromeTop.classList.remove('active');
-            this.refs.video.refs.video.style.cursor = "none";
+            this.mkpChromeBottom.setState({ isShowMkpChromeBottom: true });
+            this.mkpChromeTop.setState({ isShowMkpChromeTop: false });
+            this.video.video.style.cursor = 'none';
         }, 7000);
-    }
+    };
 
     componentDidMount() {
         MyEmmiter.trigger('changeMessage', 'message');
         this.mkpChromeBottomControl();
-        this.refs.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
+        this.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
     }
-    
+
     componentWillUnmount() {
-        this.refs.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
+        this.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
     }
 
     haneleSettings = () => {
-        this.setState({showSettingItems: !this.state.showSettingItems});
-    }
+        this.setState({ showSettingItems: !this.state.showSettingItems });
+    };
 
-    handleAutoPlay = (checked) => {
+    handleAutoPlay = checked => {
         this.setState({
-            autoPlay: checked
+            autoPlay: checked,
         });
-    }
+    };
 
     handleSpeedSelect = (item, index) => {
         this.setState({ speedIndex: index });
-        this.refs.video.refs.video.playbackRate = item === '正常' ? 1 : parseFloat(item);
-    }
+        this.video.video.playbackRate = item === '正常' ? 1 : parseFloat(item);
+    };
 
-    setProcess = (position) => {
+    setProcess = position => {
         const duration = this.state.duration;
         const currentTime = Math.floor(position * duration);
-        this.refs.video.refs.video.currentTime = currentTime;
-        this.refs.video.setState({
-            currentTime
+        this.video.video.currentTime = currentTime;
+        this.video.setState({
+            currentTime,
         });
         this.setState({
-            currentTime
+            currentTime,
         });
-    }
+    };
 
-    handleIsPlay = (isPlay) => {
-        this.setState({isPlay});
-    }
+    handleIsPlay = isPlay => {
+        this.setState({ isPlay });
+    };
 
-    handleIsEnd = (isEnd) => {
+    handleIsEnd = isEnd => {
         this.setState({
-            isEnd: isEnd
+            isEnd: isEnd,
         });
-    }
+    };
 
-    handleDuration = (duration) => {
+    handleDuration = duration => {
         this.setState({ duration });
-    }
+    };
 
-    handleCurrentTime = (currentTime) => {
+    handleCurrentTime = currentTime => {
         this.setState({ currentTime });
-    }
+    };
 
-    handleCurPlayIndex = (curPlayIndex) => {
+    handleCurPlayIndex = curPlayIndex => {
         this.setState({ curPlayIndex });
-    }
+    };
 
     handleTheaterMode = () => {
         this.setState({
-            isTheaterMode: !this.state.isTheaterMode
+            isTheaterMode: !this.state.isTheaterMode,
         });
-    }
+    };
 
-    handleFullScreen = (isFullScreen) =>{
+    handleFullScreen = isFullScreen => {
         if (this.props.onFullscreenChange) {
             this.props.onFullscreenChange(isFullScreen);
         }
-    }
+    };
 
     render() {
         const {
@@ -140,10 +156,10 @@ export default class ReactLightPlayer extends Component {
             disableNext,
             disableSettings,
             disableTheaterMode,
-            disableFullscreenMode
+            disableFullscreenMode,
         } = this.props;
 
-        const { 
+        const {
             isTheaterMode,
             isPlay,
             isEnd,
@@ -152,7 +168,8 @@ export default class ReactLightPlayer extends Component {
             autoPlay,
             currentTime,
             duration,
-            speedIndex
+            speedIndex,
+            isShowTheaterMode,
         } = this.state;
 
         const wrapperStyle = {
@@ -164,26 +181,36 @@ export default class ReactLightPlayer extends Component {
         };
 
         return (
-            <div className={`player-wrapper ${className}`} style={centered && !isTheaterMode ? wrapperStyle : {}}>
-                <div style={{width: width, height: height}} ref="player" id="player" className="player style-scope ytd-watch-flexy">
-                    <div id="player-container" className="player-container style-scope mkd-watch-flexy">
+            <div
+                className={`player-wrapper ${className}`}
+                style={centered && !isTheaterMode ? wrapperStyle : {}}>
+                <div
+                    style={{ width: width, height: height }}
+                    ref={node => (this.player = node)}
+                    className={cn(
+                        'player',
+                        'style-scope',
+                        'ytd-watch-flexy',
+                        `${isShowTheaterMode ? 'theater-mode' : ''}`,
+                    )}>
+                    <div
+                        id="player-container"
+                        className="player-container style-scope mkd-watch-flexy">
                         <div id="container" className="ytd-player style-scope ytd-player">
-                            <div 
+                            <div
                                 id="movie_player"
-                                className="html5-video-player mkp-hide-info-bar mkp-fullscreen mkp-large-width-mode mkp-big-mode" 
-                                aria-label="player"
-                                >
+                                className="html5-video-player mkp-hide-info-bar mkp-fullscreen mkp-large-width-mode mkp-big-mode"
+                                aria-label="player">
                                 <MkpChromeTop
-                                    ref="mkpChromeTop"
+                                    ref={node => (this.mkpChromeTop = node)}
                                     title={
-                                        src instanceof Array ?
-                                            src[curPlayIndex]['title']
-                                        :
-                                        (this.props.title || '')
+                                        src instanceof Array
+                                            ? src[curPlayIndex]['title']
+                                            : this.props.title || ''
                                     }
                                 />
                                 <MkpPopup
-                                    ref="mkpPopup"
+                                    ref={node => (this.mkpPopup = node)}
                                     speeds={speeds}
                                     speedIndex={speedIndex}
                                     autoPlay={autoPlay}
@@ -192,7 +219,7 @@ export default class ReactLightPlayer extends Component {
                                     onSpeedSelect={this.handleSpeedSelect}
                                 />
                                 <ControlBar
-                                    ref="mkpChromeBottom"
+                                    ref={node => (this.mkpChromeBottom = node)}
                                     disablePrev={disablePrev}
                                     disableNext={disableNext}
                                     src={src}
@@ -207,8 +234,9 @@ export default class ReactLightPlayer extends Component {
                                     disableTheaterMode={disableTheaterMode}
                                     disableFullscreenMode={disableFullscreenMode}
                                     isTheaterMode={isTheaterMode}
-                                    player={this.refs.player}
-                                    video={this.refs.video}
+                                    player={this.player}
+                                    onHandleShowTheaterMode={this.handleShowTheaterMode}
+                                    video={this.video}
                                     onCurPlayIndex={this.handleCurPlayIndex}
                                     onIsEnd={this.handleIsEnd}
                                     onSettings={this.haneleSettings}
@@ -217,9 +245,9 @@ export default class ReactLightPlayer extends Component {
                                     onSetProcess={this.setProcess}
                                     onFullscreenChange={this.handleFullScreen}
                                 />
-                                <MkpBezel ref="mkp-bazel-text" />
+                                <MkpBezel ref={node => (this.mkpBazelText = node)} />
                                 <Video
-                                    ref="video"
+                                    ref={node => (this.video = node)}
                                     src={src}
                                     speeds={speeds}
                                     preload={preload}
@@ -227,10 +255,9 @@ export default class ReactLightPlayer extends Component {
                                     poster={poster}
                                     volume={volume}
                                     speedIndex={speedIndex}
-                                    mkpPopup={this.refs.mkpPopup}
-                                    mkpChromeBottom={this.refs.mkpChromeBottom}
-                                    processSlider={this.refs.processSlider}
-                                    mkpBazelText={this.refs['mkp-bazel-text']}
+                                    mkpPopup={this.mkpPopup}
+                                    mkpChromeBottom={this.mkpChromeBottom}
+                                    mkpBazelText={this.mkpBazelText}
                                     autoPlay={autoPlay}
                                     curPlayIndex={curPlayIndex}
                                     onIsPlay={this.handleIsPlay}
@@ -243,6 +270,6 @@ export default class ReactLightPlayer extends Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
