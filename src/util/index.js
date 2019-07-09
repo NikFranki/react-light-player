@@ -13,3 +13,31 @@ export const totype = value => {
         });
     return class2type[toString.call(value)];
 };
+
+const formatTime = time => {
+    let timeStr = '00';
+    if (time > 0 && time < 10) {
+        timeStr = '0' + time;
+    } else if (time >= 10) {
+        timeStr = time;
+    }
+    return timeStr;
+};
+
+export const getTime = (second) => {
+    second = Math.floor(second);
+    let minute = Math.floor(second / 60);
+    second = second - minute * 60;
+    return parseInt(formatTime(minute)) + ':' + formatTime(second);
+};
+
+export const debounce = (func, delay) => {
+    let timeout = null;
+    return function() {
+        clearTimeout(timeout);
+        const args = arguments;
+        timeout = setTimeout(() => {
+            return func.apply(this, args);
+        }, delay);
+    };
+};

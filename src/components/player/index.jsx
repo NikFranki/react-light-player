@@ -5,7 +5,9 @@ import MkpBezel from './bezel';
 import MkpPopup from './popup';
 import Video from './video';
 import ControlBar from './control-bar';
+import Preview from './preview';
 import cn from '../../util/classname';
+import { getTime, debounce } from '../../util';
 import './index.less';
 
 export default class ReactLightPlayer extends Component {
@@ -16,6 +18,7 @@ export default class ReactLightPlayer extends Component {
     mkpPopup = null;
     processSlider = null;
     mkpBazelText = null;
+    preview = null;
 
     static defaultProps = {
         width: 500,
@@ -58,13 +61,13 @@ export default class ReactLightPlayer extends Component {
         });
     };
 
-    mkpChromeBottomControl = () => {
+    mkpChromeControl = () => {
         clearTimeout(this.timeouter);
         this.mkpChromeBottom.setState({ isShowMkpChromeBottom: true });
         this.mkpChromeTop.setState({ isShowMkpChromeTop: true });
         this.video.video.style.cursor = 'unset';
         this.timeouter = setTimeout(() => {
-            this.mkpChromeBottom.setState({ isShowMkpChromeBottom: true });
+            this.mkpChromeBottom.setState({ isShowMkpChromeBottom: false });
             this.mkpChromeTop.setState({ isShowMkpChromeTop: false });
             this.video.video.style.cursor = 'none';
         }, 7000);
@@ -72,12 +75,12 @@ export default class ReactLightPlayer extends Component {
 
     componentDidMount() {
         MyEmmiter.trigger('changeMessage', 'message');
-        this.mkpChromeBottomControl();
-        this.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
+        this.mkpChromeControl();
+        this.player.addEventListener('mousemove', this.mkpChromeControl, false);
     }
 
     componentWillUnmount() {
-        this.player.addEventListener('mousemove', this.mkpChromeBottomControl, false);
+        this.player.addEventListener('mousemove', this.mkpChromeControl, false);
     }
 
     haneleSettings = () => {
@@ -95,9 +98,19 @@ export default class ReactLightPlayer extends Component {
         this.video.video.playbackRate = item === '正常' ? 1 : parseFloat(item);
     };
 
-    setProcess = position => {
+    setProcessByPostion = position => {
         const duration = this.state.duration;
-        const currentTime = Math.floor(position * duration);
+        const currentTime = Math.round(position * duration);
+        this.video.video.currentTime = currentTime;
+        this.video.setState({
+            currentTime,
+        });
+        this.setState({
+            currentTime,
+        });
+    };
+
+    setProcessByCurTime = currentTime => {
         this.video.video.currentTime = currentTime;
         this.video.setState({
             currentTime,
@@ -218,6 +231,10 @@ export default class ReactLightPlayer extends Component {
                                     onAutoPlay={this.handleAutoPlay}
                                     onSpeedSelect={this.handleSpeedSelect}
                                 />
+                                <Preview
+                                    ref={node => (this.preview = node)}
+                                    currentTime={getTime(currentTime)}
+                                />
                                 <ControlBar
                                     ref={node => (this.mkpChromeBottom = node)}
                                     disablePrev={disablePrev}
@@ -237,12 +254,14 @@ export default class ReactLightPlayer extends Component {
                                     player={this.player}
                                     onHandleShowTheaterMode={this.handleShowTheaterMode}
                                     video={this.video}
+                                    preview={this.preview}
                                     onCurPlayIndex={this.handleCurPlayIndex}
                                     onIsEnd={this.handleIsEnd}
                                     onSettings={this.haneleSettings}
                                     onTheaterMode={this.handleTheaterMode}
                                     onResize={this.resize}
-                                    onSetProcess={this.setProcess}
+                                    onSetProcessByPosition={this.setProcessByPostion}
+                                    onSetProcessByCurTime={this.setProcessByCurTime}
                                     onFullscreenChange={this.handleFullScreen}
                                 />
                                 <MkpBezel ref={node => (this.mkpBazelText = node)} />
@@ -263,7 +282,7 @@ export default class ReactLightPlayer extends Component {
                                     onIsPlay={this.handleIsPlay}
                                     onIsEnd={this.handleIsEnd}
                                     onDuration={this.handleDuration}
-                                    onCurrentTime={this.handleCurrentTime}
+                                    onHandleCurrentTime={this.handleCurrentTime}
                                 />
                             </div>
                         </div>

@@ -18,7 +18,7 @@ export default class MkpBezel extends Component {
         const { isPlay, isHide } = this.state;
         return (
             <div
-                className={cn('mkp-bezel-text-hide', `${isHide ? '' : 'active'}`)}
+                className={cn('mkp-bezel-text', `${isHide ? '' : 'active'}`)}
                 ref={node => (this.mkpBazelText = node)}>
                 <div className="mkp-bezel" role="status" aria-label={isPlay ? 'play' : 'pause'}>
                     <div className="mkp-bezel-icon">

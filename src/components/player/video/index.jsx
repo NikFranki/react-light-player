@@ -92,8 +92,8 @@ export default class Video extends Component {
             const width = processSlider.slider.getBoundingClientRect().width;
             const position = parseFloat(this.video.currentTime / this.state.duration);
             processSlider.setSliderInnerWidth(position, width);
-            if (this.props.onCurrentTime) {
-                this.props.onCurrentTime(this.video.currentTime);
+            if (this.props.onHandleCurrentTime) {
+                this.props.onHandleCurrentTime(this.video.currentTime);
             }
             this.setState({
                 currentTime: this.video.currentTime,
@@ -105,8 +105,8 @@ export default class Video extends Component {
     handleEnded = () => {
         const { autoPlay, mkpChromeBottom, onIsEnd } = this.props;
         if (autoPlay) {
-            if (this.props.onCurrentTime) {
-                this.props.onCurrentTime(0);
+            if (this.props.onHandleCurrentTime) {
+                this.props.onHandleCurrentTime(0);
             }
             this.setState({
                 currentTime: 0,
@@ -122,10 +122,13 @@ export default class Video extends Component {
     };
 
     handleProgress = () => {
-        const { processSlider } = this.props.mkpChromeBottom;
-        const sliderWidth = processSlider.slider.getBoundingClientRect().width;
-        const position = parseFloat(this.video.buffered.end(0) / this.video.duration);
-        processSlider.setSliderInnerLoadedWidth(position, sliderWidth);
+        const { mkpChromeBottom } = this.props;
+        if (mkpChromeBottom) {
+            const { processSlider } = mkpChromeBottom;
+            const sliderWidth = processSlider && processSlider.slider.getBoundingClientRect().width;
+            const position = parseFloat(this.video.buffered.end(0) / this.video.duration);
+            processSlider && processSlider.setSliderInnerLoadedWidth(position, sliderWidth);
+        }
     };
 
     handleEroor = () => {

@@ -2,7 +2,6 @@
     position: absolute;
     top: 0;
     z-index: 59;
-    display: none;
     padding: 0 12px;
     flex-wrap: nowrap;
     justify-content: flex-end;
@@ -10,8 +9,10 @@
     background: rgba(0, 0, 0, 0.5);
     min-width: 100%;
     user-select: none;
+    transition: transform .5s;
+    transform: translateY(-45px);
     &.active {
-        display: flex;
+        transform: translateY(0);
     }
     .mkp-title-text {
         flex: 1;

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Slider from '../slider';
 import cn from '../../../util/classname';
 import MyEmmiter from '../../../util/events';
+import { getTime } from '../../../util';
+import { PALY_BACK_UP_SPEED, VOLUME_RAISE_OR_DOWN_SPEED } from '../../../util/constant';
 import './index.less';
 
 export default class ControlBar extends Component {
@@ -53,12 +55,85 @@ export default class ControlBar extends Component {
         });
     };
 
+    handleKeyEvent = e => {
+        const { video } = this.props;
+        const { curVolume, isPlay } = this.state;
+        if (e && e.keyCode === 38) {
+            // up
+            console.log('up');
+            this.handleVolumeControl(Number((curVolume + VOLUME_RAISE_OR_DOWN_SPEED).toFixed(1)));
+        } else if (e && e.keyCode === 40) {
+            // down
+            console.log('down');
+            this.handleVolumeControl(Number((curVolume - VOLUME_RAISE_OR_DOWN_SPEED).toFixed(1)));
+        } else if (e && e.keyCode === 37) {
+            // left
+            console.log('left');
+            this.handleSliderControl('back');
+        } else if (e && e.keyCode === 39) {
+            // right
+            console.log('right');
+            this.handleSliderControl('forward');
+        } else if (e && e.keyCode === 32) {
+            // space space (paly or pause)
+            console.log('space');
+            // video.playOrPauseVide();
+        }
+    };
+
+    handleSliderControl = direction => {
+        const { isTheaterMode } = this.props;
+        const isFullScreen =
+            this.runPrefixMethod(document, 'FullScreen') ||
+            this.runPrefixMethod(document, 'IsFullScreen');
+        const { innerWidth, sliderWidth, bodyWidth } = this.calReleaseWidth();
+        this.handleSliderProcess(
+            direction,
+            innerWidth,
+            isTheaterMode || isFullScreen ? bodyWidth : sliderWidth,
+            PALY_BACK_UP_SPEED,
+        );
+    };
+
+    handleSliderProcess = (type, innerWidth, outerWidth, speed) => {
+        const { onSetProcessByCurTime, duration, currentTime } = this.props;
+        const speedWidth = (outerWidth / duration) * speed; // 每次回退5s
+        const timeAction = new Map([
+            ['forward', currentTime + speed],
+            ['back', currentTime - speed],
+        ]);
+
+        let newTime = timeAction.get(type);
+        if (newTime <= -speed || newTime >= duration + speed) return;
+        if (newTime < 0) {
+            newTime = 0;
+        } else if (newTime > duration) {
+            newTime = duration;
+        }
+
+        const innerWidthAction = new Map([
+            ['forward', innerWidth + speedWidth],
+            ['back', innerWidth - speedWidth],
+        ]);
+        let curInnerWidth = innerWidthAction.get(type);
+        if (curInnerWidth < 0) {
+            curInnerWidth = 0;
+        } else if (curInnerWidth > outerWidth) {
+            curInnerWidth = outerWidth;
+        }
+
+        const position = curInnerWidth / outerWidth;
+        this.processSlider.setSliderInnerWidth(position, outerWidth);
+        onSetProcessByCurTime && onSetProcessByCurTime(newTime);
+    };
+
     componentDidMount() {
         this.setState({ isShowMkpChromeBottom: true }, () => {
             const width = this.volumeSlider.slider.firstChild.getBoundingClientRect().width;
             this.volumeSlider.setSliderInnerWidth(this.props.volume, width);
         });
         this.handleFullscreenChange('add');
+        document.addEventListener('keyup', this.handleKeyEvent, false);
 
         MyEmmiter.listen('changeMessage', message => {
             console.log(message);
@@ -67,6 +142,7 @@ export default class ControlBar extends Component {
 
     componentWillUnmount() {
         this.handleFullscreenChange('remove');
+        document.removeEventListener('keyup', this.handleKeyEvent, false);
     }
 
     // prev
@@ -120,19 +196,19 @@ export default class ControlBar extends Component {
     };
 
     handleVolumeOnOrOff = () => {
+        const { curVolume } = this.state;
         const status = this.volume.getAttribute('aria-label');
+        const width = this.volumeSlider.slider.firstChild.getBoundingClientRect().width;
         const strategy = {
             on: () => {
-                this.volume.setAttribute('aria-value', this.state.curVolume);
+                this.volume.setAttribute('aria-value', curVolume);
                 this.volume.setAttribute('aria-label', 'off');
-                const width = this.volumeSlider.slider.firstChild.getBoundingClientRect().width;
                 this.volumeSlider.resetSliderInnerWidth();
                 this.setVolume(0);
             },
             off: () => {
                 const value = this.volume.getAttribute('aria-value') || 1;
                 this.volume.setAttribute('aria-label', 'on');
-                const width = this.volumeSlider.slider.firstChild.getBoundingClientRect().width;
                 this.volumeSlider.setSliderInnerWidth(value, width);
                 this.setVolume(value);
             },
@@ -140,9 +216,10 @@ export default class ControlBar extends Component {
         strategy[status]();
     };
 
-    setProcess = position => {
-        if (this.props.onSetProcess) {
-            this.props.onSetProcess(position);
+    setProcessByPosition = position => {
+        const { onSetProcessByPosition } = this.props;
+        if (onSetProcessByPosition) {
+            onSetProcessByPosition(position);
         }
     };
 
@@ -150,10 +227,19 @@ export default class ControlBar extends Component {
         return (
             <Slider
                 ref={node => (this.processSlider = node)}
-                setProcess={this.setProcess}
+                preview={this.props.preview}
+                onSetProcessByPosition={this.setProcessByPosition}
+                duration={this.props.duration}
                 type="process"
             />
         );
+    };
+
+    handleVolumeControl = vol => {
+        const width = this.volumeSlider.slider.firstChild.getBoundingClientRect().width;
+        if (vol < 0 || vol > 1 || vol === undefined) return;
+        this.volumeSlider.setSliderInnerWidth(vol, width);
+        this.setVolume(vol);
     };
 
     setVolume = position => {
@@ -214,7 +300,6 @@ export default class ControlBar extends Component {
 
     // fullscreen or exit fullscreen
     reqFullscreenOrExitFullscreen = () => {
-        const { video } = this.props;
         const isFullScreen =
             this.runPrefixMethod(document, 'FullScreen') ||
             this.runPrefixMethod(document, 'IsFullScreen');
@@ -252,26 +337,19 @@ export default class ControlBar extends Component {
             setTimeout(() => {
                 const position = parseFloat(innerWidth / sliderWidth);
                 this.processSlider.setSliderInnerWidth(position, bodyWidth);
+                this.processSlider.setSliderInnerLoadedWidth(position, bodyWidth);
             }, 0);
         } else {
             setTimeout(() => {
                 const position = parseFloat(innerWidth / bodyWidth);
                 this.processSlider.setSliderInnerWidth(position, sliderWidth);
+                this.processSlider.setSliderInnerLoadedWidth(position, sliderWidth);
             }, 0);
         }
     };
 
     mkpLeftControls = () => {
-        const {
-            disablePrev,
-            disableNext,
-            src,
-            duration,
-            video,
-            currentTime,
-            isEnd,
-            volume,
-        } = this.props;
+        const { disablePrev, disableNext, src, duration, video, currentTime, isEnd } = this.props;
 
         const { isPlay, curVolume } = this.state;
 
@@ -409,21 +487,4 @@ export default class ControlBar extends Component {
             </div>
         );
     }
-}
-
-function getTime(second) {
-    second = Math.floor(second);
-    let minute = Math.floor(second / 60);
-    second = second - minute * 60;
-    return formatTime(minute) + ':' + formatTime(second);
-}
-
-function formatTime(time) {
-    let timeStr = '00';
-    if (time > 0 && time < 10) {
-        timeStr = '0' + time;
-    } else if (time >= 10) {
-        timeStr = time;
-    }
-    return timeStr;
 }

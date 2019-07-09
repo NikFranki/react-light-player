@@ -8,12 +8,13 @@
     z-index: 1000;
     text-align: left;
     direction: ltr;
-    display: none;
     background: rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
     user-select: none;
+    transition: transform .5s;
+    transform: translateY(41px);
     &.active {
-        display: block;
+        transform: translateY(0);
     }
     .mkp-chrome-controls {
         display: flex;
