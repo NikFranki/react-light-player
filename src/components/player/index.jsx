@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import MyEmmiter from '../../util/events';
 import MkpChromeTop from './chrometop';
 import MkpBezel from './bezel';
 import MkpPopup from './popup';
@@ -74,7 +73,6 @@ export default class ReactLightPlayer extends Component {
     };
 
     componentDidMount() {
-        MyEmmiter.trigger('changeMessage', 'message');
         this.mkpChromeControl();
         this.player.addEventListener('mousemove', this.mkpChromeControl, false);
     }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Slider from '../slider';
 import cn from '../../../util/classname';
-import MyEmmiter from '../../../util/events';
 import { getTime } from '../../../util';
 import { PALY_BACK_UP_SPEED, VOLUME_RAISE_OR_DOWN_SPEED } from '../../../util/constant';
 import './index.less';
@@ -134,10 +133,6 @@ export default class ControlBar extends Component {
         });
         this.handleFullscreenChange('add');
         document.addEventListener('keyup', this.handleKeyEvent, false);
-
-        MyEmmiter.listen('changeMessage', message => {
-            console.log(message);
-        });
     }
 
     componentWillUnmount() {
