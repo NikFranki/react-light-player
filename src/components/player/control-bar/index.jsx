@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Slider from '../slider';
 import cn from '../../../util/classname';
 import { getTime } from '../../../util';
-import { PALY_BACK_UP_SPEED, VOLUME_RAISE_OR_DOWN_SPEED } from '../../../util/constant';
+import { TooltipHook } from '../../../components/tooltip';
+import { PALY_BACK_UP_SPEED, VOLUME_RAISE_OR_DOWN_SPEED } from '../../../constant';
 import './index.less';
 
 export default class ControlBar extends Component {
@@ -21,7 +22,8 @@ export default class ControlBar extends Component {
         ['', 'moz', 'webkit', 'ms'].forEach(prefix => {
             const method = prefix + 'fullscreenchange';
             const emiter = `${type}EventListener`;
-            document[emiter](method, () => {
+            document[emiter](method, (e) => {
+                console.log('lala', method, e.keyCode );
                 const { isTheaterMode, onFullscreenChange } = this.props;
                 const isFullScreen =
                     this.runPrefixMethod(document, 'FullScreen') ||
@@ -56,15 +58,15 @@ export default class ControlBar extends Component {
 
     handleKeyEvent = e => {
         const { video } = this.props;
-        const { curVolume, isPlay } = this.state;
+        const { curVolume } = this.state;
         if (e && e.keyCode === 38) {
             // up
             console.log('up');
-            this.handleVolumeControl(Number((curVolume + VOLUME_RAISE_OR_DOWN_SPEED).toFixed(1)));
+            this.handleVolumeControl(Number((curVolume + VOLUME_RAISE_OR_DOWN_SPEED).toFixed(2)));
         } else if (e && e.keyCode === 40) {
             // down
             console.log('down');
-            this.handleVolumeControl(Number((curVolume - VOLUME_RAISE_OR_DOWN_SPEED).toFixed(1)));
+            this.handleVolumeControl(Number((curVolume - VOLUME_RAISE_OR_DOWN_SPEED).toFixed(2)));
         } else if (e && e.keyCode === 37) {
             // left
             console.log('left');
@@ -76,7 +78,8 @@ export default class ControlBar extends Component {
         } else if (e && e.keyCode === 32) {
             // space space (paly or pause)
             console.log('space');
-            // video.playOrPauseVide();
+            video.playOrPauseVide();
+            e.preventDefault();
         }
     };
 
@@ -365,7 +368,20 @@ export default class ControlBar extends Component {
                 {/* play btn */}
                 <button
                     className="mkp-play-button mkp-button"
-                    title={isPlay ? 'pause' : 'play'}
+                    onMouseOver={() =>
+                        TooltipHook.create({
+                            className: 'play-tooltip',
+                            direction: 'top',
+                            position: {
+                                left: 12,
+                                top: 278,
+                            },
+                            isShowArrow: false,
+                            title: `${isPlay ? 'pause' : 'play'}`,
+                            mouseEnterDelay: 0.5,
+                        })
+                    }
+                    onMouseOut={() => TooltipHook.distory()}
                     onClick={() => {
                         if (this.props.isEnd) {
                             this.props.onIsEnd && this.props.onIsEnd(false);
@@ -400,7 +416,20 @@ export default class ControlBar extends Component {
                     <button
                         ref={node => (this.volume = node)}
                         className="mkp-mute-button mkp-button"
-                        title={!curVolume ? 'volume on' : 'volume off'}
+                        onMouseOver={() =>
+                            TooltipHook.create({
+                                className: 'play-tooltip',
+                                direction: 'top',
+                                position: {
+                                    left: 33,
+                                    top: 278,
+                                },
+                                isShowArrow: false,
+                                title: 'volume',
+                                mouseEnterDelay: 0.5,
+                            })
+                        }
+                        onMouseOut={() => TooltipHook.distory()}
                         onClick={this.handleVolumeOnOrOff}
                         aria-label={curVolume === 0 ? 'off' : 'on'}>
                         <img
@@ -434,8 +463,21 @@ export default class ControlBar extends Component {
                 {/* settings */}
                 {!disableSettings && (
                     <button
+                        onMouseOver={() =>
+                            TooltipHook.create({
+                                className: 'settings-tooltip',
+                                direction: 'top',
+                                position: {
+                                    left: 509,
+                                    top: 278,
+                                },
+                                isShowArrow: false,
+                                title: 'tooltip',
+                                mouseEnterDelay: 0.5,
+                            })
+                        }
+                        onMouseOut={() => TooltipHook.distory()}
                         className="mkp-button mkp-settings-button mkp-hd-quality-badge"
-                        title="settings"
                         onClick={this.haneleSettings}>
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAACsElEQVRYR92Yy4tPcRjGP49rM1ko9i4xITQLs3H5C6zGFBulGJFyidxKM4wSuRQWk5CNDTHZ+A9YCCVynZGdlaTccn301hkdM+f2Oxr98m7O5r083+f73r5HNJmoyfDw/wCyfQbYmsPwGUnb67BfmyHbL4HZOUGHJM39Z4Bsjwe+FwT8AUyWFN+GpBZDthcAj0sitUkabAgN5Ce17aB8JXBZ0pthx7bHAYeAAyXBQqdP0s+U7XRgFXBN0tss+1yGbN8FlgDfgBvAOeA9cAFYVPHkj4CNwBRgE9AJTADuSeqoDMh2N3C+YtC6at2SLo40HsWQ7anAKyC+YynvgFmS4vtbsgD1A5vHEknKd7+kLbmAbC8GHhQlew7Q6EmRGzMaPIiBdkkPh+3+YMh2T1JBVfxGsh8D4pSvw8D2TGADsC8BWMVPr6S+PEAtwCVgTYmnr0BH+mRpfdvtwB1gUomfK8A6SV8yAaX6xTbgFBAdOUv2SDpeFMz2fuBIjk6wu0vS2dIqS4GKBnY9x2GrpM8lgFqBjzk6nZKit42Sosa4FLidYfNM0vwqyWE7RsecDN3lkrJ8F46OZcCtvwT0Asia+iskZfkuBJR3ZTGbWiRFYueK7SiQTzkKXZIGKl+Z7ViuThYk9W5JJ0oA7QWO5ujE6rKzNKmTU1Ut+2hoT7MC2l4I3P/rsrfdCxyskrDAh2iCkq6m9W2vTnpZVFkV6ZF0eFhxZKeuMzpiOA4BE5PR0chQLh4dgdJ28wzXBFBzrR8JqOZZ0FKjI2uFjXERVxq5VkVirVifLHv1V9iEpWlAFzBQc8mPyjmYseSvBW7mvUjqPoNilj0poWiepOdVaEzr1AXUXA/F5ErjIRAbYpYMSmprlJ3Qr8VQAqjoZ8NpSTv+KaA6warY1GaoivM6Ok0H6BcU3P0lNMevkgAAAABJRU5ErkJggg=="
@@ -448,7 +490,20 @@ export default class ControlBar extends Component {
                     <button
                         className="mkp-size-button mkp-button"
                         onClick={this.handleTheaterMode}
-                        title={isTheaterMode ? 'default mode' : 'theater mode'}>
+                        onMouseOver={() =>
+                            TooltipHook.create({
+                                className: 'theater-tooltip',
+                                direction: 'top',
+                                position: {
+                                    left: 525,
+                                    top: 278,
+                                },
+                                isShowArrow: false,
+                                title: `${isTheaterMode ? 'default mode' : 'theater mode'}`,
+                                mouseEnterDelay: 0.5,
+                            })
+                        }
+                        onMouseOut={() => TooltipHook.distory()}>
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAA1klEQVRYR+2XTQrCMBBG36fgwp9DunPrCcQTuHXnIVUUUUcEG6qkpEKsKUy3TWYe75uSVBT2qDAeHCiViBv6ypCZLYE1MEttzPR+D6wkbap6b5GZ2QGYZGrWtsxR0rQJyNpWyblOUhDzaSgA1RflbF7VMrNoLwfqryEze8Z3D9NeG7S/zJADpb4yN9TC0AC4lTTUDhRLIxwdZuaGUoaGwLWkoXagfkf2ixO+qWb0Cvs6y87AqEsY4CRp3HTJ3wLzDqEuwE7SIgrUsZloO/+VTqXghnpn6AHp8K4l0J5iMQAAAABJRU5ErkJggg=="
                             alt="theater"
@@ -460,9 +515,32 @@ export default class ControlBar extends Component {
                     <button
                         ref="fullscreenBtn"
                         className="mkp-fullscreen-button mkp-button"
-                        title={isFullScreen ? 'exit fullscreen' : 'open fullscreen'}
-                        onClick={this.reqFullscreenOrExitFullscreen}
-                    />
+                        onMouseOver={() =>
+                            TooltipHook.create({
+                                className: 'fullscreen-tooltip',
+                                direction: 'top',
+                                position: {
+                                    left: 513,
+                                    top: 278,
+                                },
+                                isShowArrow: false,
+                                title: `${
+                                    isFullScreen ? 'exit fullscreen' : 'open fullscreen'
+                                }`,
+                                mouseEnterDelay: 0.5,
+                            })
+                        }
+                        onMouseOut={() => TooltipHook.distory()}
+                        onClick={this.reqFullscreenOrExitFullscreen}>
+                        <img
+                            src={`${
+                                isFullScreen
+                                    ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAZUlEQVRIS+2UwQoAIAhD3f9/tFEQVFgitYvUMcYebSaEfED2lw9wE3YjUlWtLgAm7e5+JSYF9OePz91FdNK0aK2W6AB3NAICt+SAlylNCqCXTAeMbf1VkXRMb3/vtABfmlle9A4KrCdQGeBs3msAAAAASUVORK5CYII='
+                                    : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAABCklEQVRYR+2XOw7CMBBEZ1rOwEHooKRMSw4D4TJQIloqaDgJZ6BkkaVEihI7a4dYCtKm9Honz+PfmpjZx5nxwIC0GfE6JCJbACs1max8fUTE297p+yR56+b3gESkAHDRYFycpC/ftX1i8gEUJK/tvj5BN7pDjOAEQBXJYwrQA8A9BMdxU7YBsK41k4GOoZ/GOBhYX86RvQGFHBQRc2hweZlD2u5LdkgTzB23215z2Bz6f4fq4qopP3Jcru3ypqev1UMGZA5pa9Qc+tWh3EV+8rYfPFh9zyCXICKinch1PApoB+AUIzgBUEnyrL3LFgBKAEsNauS7rJF9uYGTfA8CaRC541Z+aA7PzqEvH1fZJdb0wOQAAAAASUVORK5CYII='
+                            }`}
+                            alt="fullScreen"
+                        />
+                    </button>
                 )}
             </div>
         );

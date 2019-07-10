@@ -20,18 +20,18 @@ export default class Preview extends Component {
                 style={tooltipPos}
                 ref={node => (this.mkpTooltip = node)}
                 className={cn(
-                    'mkp-tooltip',
+                    'mkp-preview',
                     'mkp-bottom',
                     'mkp-preview',
                     `${isShowMkpTooltip ? 'active' : ''}`,
                 )}>
-                <div className="mkp-tooltip-bg">
-                    <div className="mkp-tooltip-duration" />
+                <div className="mkp-preview-bg">
+                    <div className="mkp-preview-duration" />
                 </div>
-                <div className="mkp-tooltip-text-wrapper">
-                    <div className="mkp-tooltip-image" />
-                    <div className="mkp-tooltip-title" />
-                    <span className="mkp-tooltip-text">{tick}</span>
+                <div className="mkp-preview-text-wrapper">
+                    <div className="mkp-preview-image" />
+                    <div className="mkp-preview-title" />
+                    <span className="mkp-preview-text">{tick}</span>
                 </div>
             </div>
         );

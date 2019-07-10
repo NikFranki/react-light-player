@@ -4,7 +4,7 @@ const common = require('./webpack.common');
 
 module.exports = merge(common, {
     mode: 'production',
-    externals: ['antd', 'react', 'react-dom'],
+    externals: ['react', 'react-dom'],
     optimization: {
         minimizer: [new UglifyJsPlugin({
             uglifyOptions: {

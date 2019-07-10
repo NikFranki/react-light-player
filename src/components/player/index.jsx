@@ -66,7 +66,10 @@ export default class ReactLightPlayer extends Component {
         this.mkpChromeTop.setState({ isShowMkpChromeTop: true });
         this.video.video.style.cursor = 'unset';
         this.timeouter = setTimeout(() => {
-            this.mkpChromeBottom.setState({ isShowMkpChromeBottom: false });
+            if (this.state.showSettingItems) {
+                return;
+            }
+            // this.mkpChromeBottom.setState({ isShowMkpChromeBottom: false });
             this.mkpChromeTop.setState({ isShowMkpChromeTop: false });
             this.video.video.style.cursor = 'none';
         }, 7000);
@@ -82,6 +85,9 @@ export default class ReactLightPlayer extends Component {
     }
 
     haneleSettings = () => {
+        clearTimeout(this.timeouter);
+        this.mkpChromeBottom.setState({ isShowMkpChromeBottom: true });
+        this.mkpChromeTop.setState({ isShowMkpChromeTop: true });
         this.setState({ showSettingItems: !this.state.showSettingItems });
     };
 
@@ -193,7 +199,7 @@ export default class ReactLightPlayer extends Component {
 
         return (
             <div
-                className={`player-wrapper ${className}`}
+                className={cn('player-wrapper', `${className}`)}
                 style={centered && !isTheaterMode ? wrapperStyle : {}}>
                 <div
                     style={{ width: width, height: height }}
