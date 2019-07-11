@@ -4,6 +4,7 @@ import cn from '../../util/classname';
 import './index.less';
 
 export default class Tooltip extends Component {
+
     static defaultProps = {
         className: '',
         direction: 'top',
@@ -14,19 +15,29 @@ export default class Tooltip extends Component {
         },
         title: 'tooltip',
         mouseEnterDelay: 0.5,
+        outerWidth: '100%',
+        outerHeight: '100%',
     };
 
     render() {
-        const { className, direction, position, isShowArrow, title, mouseEnterDelay } = this.props;
-        const { left, top } = position;
+        const {
+            className,
+            direction,
+            position,
+            isShowArrow,
+            title,
+            mouseEnterDelay,
+            outerWidth,
+            outerHeight,
+        } = this.props;
         return (
             <div
                 style={{
                     position: 'absolute',
                     top: '0px',
                     left: '0px',
-                    width: '100%',
-                    height: '100%',
+                    width: outerWidth,
+                    height: outerHeight,
                 }}>
                 <div>
                     <div
@@ -36,8 +47,7 @@ export default class Tooltip extends Component {
                             `mkp-tooltip-placement-${direction}`,
                         )}
                         style={{
-                            left,
-                            top,
+                            ...position,
                             transformOrigin: '50% 45px',
                             animationDuration: `${mouseEnterDelay}s`,
                         }}>
