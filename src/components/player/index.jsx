@@ -258,6 +258,7 @@ export default class ReactLightPlayer extends Component {
                                     player={this.player}
                                     onHandleShowTheaterMode={this.handleShowTheaterMode}
                                     video={this.video}
+                                    mkpBazelText={this.mkpBazelText}
                                     preview={this.preview}
                                     onCurPlayIndex={this.handleCurPlayIndex}
                                     onIsEnd={this.handleIsEnd}

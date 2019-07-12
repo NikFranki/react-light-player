@@ -234,7 +234,24 @@ export default class ControlBar extends Component {
     };
 
     handleVolumeControl = vol => {
+        const { mkpBazelText } = this.props;
         const width = this.volumeSlider.slider.firstChild.getBoundingClientRect().width;
+        console.log(vol);
+        mkpBazelText &&
+            mkpBazelText.setState({
+                role: 'volume_up_or_down',
+                isAddVolume: true,
+                volume: parseInt((vol < 0 ? 0 : vol > 1 ? 1 : vol) * 100),
+                isHide: false,
+            });
+        let timer = setTimeout(() => {
+            mkpBazelText &&
+                mkpBazelText.setState({
+                    role: 'volume_up_or_down',
+                    isHide: true,
+                });
+            timer = null;
+        }, 500);
         if (vol < 0 || vol > 1 || vol === undefined) return;
         this.volumeSlider.setSliderInnerWidth(vol, width);
         this.setVolume(vol);
@@ -352,14 +369,14 @@ export default class ControlBar extends Component {
         const isFullScreen =
             this.runPrefixMethod(document, 'FullScreen') ||
             this.runPrefixMethod(document, 'IsFullScreen');
-        const outerWidth = video.video.getBoundingClientRect().width;
-        const outerHeight = video.video.getBoundingClientRect().height;
+        const outerWidth = video && video.video.getBoundingClientRect().width;
+        const outerHeight = video && video.video.getBoundingClientRect().height;
         const hoverActions = new Map([
             [
                 'settings',
                 {
                     className: 'settings-tooltip',
-                    direction: 'top',
+                    placement: 'top',
                     position: {
                         right: Number(`${isFullScreen ? 28 : 70}`),
                         bottom: 35,
@@ -375,7 +392,7 @@ export default class ControlBar extends Component {
                 'play',
                 {
                     className: 'play-tooltip',
-                    direction: 'top',
+                    placement: 'top',
                     position: {
                         left: 12,
                         bottom: 35,
@@ -391,7 +408,7 @@ export default class ControlBar extends Component {
                 'volume',
                 {
                     className: 'volume-tooltip',
-                    direction: 'top',
+                    placement: 'top',
                     position: {
                         left: 40,
                         bottom: 35,
@@ -407,7 +424,7 @@ export default class ControlBar extends Component {
                 'theater',
                 {
                     className: 'theater-tooltip',
-                    direction: 'top',
+                    placement: 'top',
                     position: {
                         left: 525,
                         bottom: 35,
@@ -423,7 +440,7 @@ export default class ControlBar extends Component {
                 'fullscreen',
                 {
                     className: 'fullscreen-tooltip',
-                    direction: 'top',
+                    placement: 'top',
                     position: {
                         right: 12,
                         bottom: 35,
@@ -445,9 +462,9 @@ export default class ControlBar extends Component {
             onMouseOver() {
                 TooltipHook.create(self.btnHoverConfig(type));
             },
-            onMouseOut(){
+            onMouseOut() {
                 TooltipHook.distory();
-            }
+            },
         };
     };
 
@@ -552,9 +569,7 @@ export default class ControlBar extends Component {
                 )}
                 {/* Theater Mode */}
                 {!disableTheaterMode && (
-                    <button
-                        className="mkp-size-button mkp-button"
-                        onClick={this.handleTheaterMode}>
+                    <button className="mkp-size-button mkp-button" onClick={this.handleTheaterMode}>
                         <img
                             {...this.handleBtnHover('theater')}
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAA1klEQVRYR+2XTQrCMBBG36fgwp9DunPrCcQTuHXnIVUUUUcEG6qkpEKsKUy3TWYe75uSVBT2qDAeHCiViBv6ypCZLYE1MEttzPR+D6wkbap6b5GZ2QGYZGrWtsxR0rQJyNpWyblOUhDzaSgA1RflbF7VMrNoLwfqryEze8Z3D9NeG7S/zJADpb4yN9TC0AC4lTTUDhRLIxwdZuaGUoaGwLWkoXagfkf2ixO+qWb0Cvs6y87AqEsY4CRp3HTJ3wLzDqEuwE7SIgrUsZloO/+VTqXghnpn6AHp8K4l0J5iMQAAAABJRU5ErkJggg=="
@@ -569,12 +584,12 @@ export default class ControlBar extends Component {
                         className="mkp-fullscreen-button mkp-button"
                         onClick={this.reqFullscreenOrExitFullscreen}>
                         <img
-                            {...this.handleBtnHover('fullscreen')}
                             src={`${
                                 isFullScreen
                                     ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAZUlEQVRIS+2UwQoAIAhD3f9/tFEQVFgitYvUMcYebSaEfED2lw9wE3YjUlWtLgAm7e5+JSYF9OePz91FdNK0aK2W6AB3NAICt+SAlylNCqCXTAeMbf1VkXRMb3/vtABfmlle9A4KrCdQGeBs3msAAAAASUVORK5CYII='
                                     : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAABCklEQVRYR+2XOw7CMBBEZ1rOwEHooKRMSw4D4TJQIloqaDgJZ6BkkaVEihI7a4dYCtKm9Honz+PfmpjZx5nxwIC0GfE6JCJbACs1max8fUTE297p+yR56+b3gESkAHDRYFycpC/ftX1i8gEUJK/tvj5BN7pDjOAEQBXJYwrQA8A9BMdxU7YBsK41k4GOoZ/GOBhYX86RvQGFHBQRc2hweZlD2u5LdkgTzB23215z2Bz6f4fq4qopP3Jcru3ypqev1UMGZA5pa9Qc+tWh3EV+8rYfPFh9zyCXICKinch1PApoB+AUIzgBUEnyrL3LFgBKAEsNauS7rJF9uYGTfA8CaRC541Z+aA7PzqEvH1fZJdb0wOQAAAAASUVORK5CYII='
                             }`}
+                            {...this.handleBtnHover('fullscreen')}
                             alt="fullScreen"
                         />
                     </button>

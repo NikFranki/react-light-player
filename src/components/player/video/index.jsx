@@ -32,11 +32,14 @@ export default class Video extends Component {
             this.props.onIsPlay(!this.state.isPlay);
         }
         const { mkpBazelText, mkpChromeBottom } = this.props;
-        mkpBazelText.handlePlayStatus(!this.state.isPlay);
         mkpChromeBottom.setState({ isPlay: !this.state.isPlay });
-        mkpBazelText.setState({ isHide: false });
+        mkpBazelText.setState({
+            role: 'video_play_or_pause',
+            isPlay: !this.state.isPlay,
+            isHide: false,
+        });
         let timer = setTimeout(() => {
-            mkpBazelText.setState({ isHide: true });
+            mkpBazelText.setState({ role: 'video_play_or_pause', isHide: true });
             timer = null;
         }, 500);
         const { isPlay } = this.state;

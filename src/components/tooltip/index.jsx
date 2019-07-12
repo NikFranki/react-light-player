@@ -7,7 +7,7 @@ export default class Tooltip extends Component {
 
     static defaultProps = {
         className: '',
-        direction: 'top',
+        placement: 'top',
         isShowArrow: true,
         position: {
             left: 0,
@@ -22,7 +22,7 @@ export default class Tooltip extends Component {
     render() {
         const {
             className,
-            direction,
+            placement,
             position,
             isShowArrow,
             title,
@@ -44,7 +44,7 @@ export default class Tooltip extends Component {
                         className={cn(
                             'mkp-tooltip',
                             className,
-                            `mkp-tooltip-placement-${direction}`,
+                            `mkp-tooltip-placement-${placement}`,
                         )}
                         style={{
                             ...position,
