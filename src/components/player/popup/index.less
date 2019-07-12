@@ -12,6 +12,7 @@
         will-change: width, height;
         width: 223px;
         height: 145px;
+        user-select: none;
     }
     &.speed {
         width: 92px;
@@ -49,11 +50,8 @@
                 }
                 .mkp-menuitem-content {
                     position: relative;
-                    .mkp-menuitem-toggle-checkbox {
-                        .ant-switch-checked {
-                            background: #f00;
-                        }
-                    }
+                    display: flex;
+                    align-items: center;
                 }
             }
             .mkp-speed {
@@ -64,6 +62,8 @@
                     display: block;
                 }
                 .mkp-speed-header {
+                    display: flex;
+                    align-items: center;
                     padding: 10px 15px;
                     border-bottom: 1px solid #655e5e;
                     text-align: center;

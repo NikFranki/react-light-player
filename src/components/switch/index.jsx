@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import cn from '../../util/classname';
 import './index.less';
 
 export default class Switch extends Component {
@@ -16,12 +17,13 @@ export default class Switch extends Component {
     render() {
         const { isChecked } = this.state;
         return (
-            <input
+            <div
                 ref={node => (this.switchNode = node)}
-                className="switch switch-anim"
-                onChange={this.checkNum}
-                type="checkbox"
-                checked={isChecked}
+                onClick={this.checkNum}
+                className={cn(
+                    'mkp-menuitem-toggle-checkbox',
+                    `${isChecked ? 'checked' : ''}`,
+                )}
             />
         );
     }

@@ -87,9 +87,7 @@ export default class MkpPopup extends Component {
                                 tabIndex="0">
                                 <div className="mkp-menuitem-label">自动播放</div>
                                 <div className="mkp-menuitem-content">
-                                    <div className="mkp-menuitem-toggle-checkbox">
-                                        <Switch />
-                                    </div>
+                                    <Switch />
                                 </div>
                             </div>
                             <div

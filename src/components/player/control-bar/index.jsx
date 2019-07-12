@@ -16,6 +16,7 @@ export default class ControlBar extends Component {
         curVolume: this.props.volume || 1,
         isPlay: this.props.isPlay || false,
         isShowMkpChromeBottom: false,
+        isFullScreen: false,
     };
 
     handleFullscreenChange = type => {
@@ -29,6 +30,7 @@ export default class ControlBar extends Component {
                     this.runPrefixMethod(document, 'FullScreen') ||
                     this.runPrefixMethod(document, 'IsFullScreen');
                 const { innerWidth, sliderWidth, bodyWidth } = this.calReleaseWidth();
+                this.setState({ isFullScreen });
                 if (onFullscreenChange) {
                     onFullscreenChange(isFullScreen);
                 }
@@ -236,7 +238,6 @@ export default class ControlBar extends Component {
     handleVolumeControl = vol => {
         const { mkpBazelText } = this.props;
         const width = this.volumeSlider.slider.firstChild.getBoundingClientRect().width;
-        console.log(vol);
         mkpBazelText &&
             mkpBazelText.setState({
                 role: 'volume_up_or_down',
@@ -549,10 +550,8 @@ export default class ControlBar extends Component {
     };
 
     mkpRightControls = () => {
-        const { disableSettings, disableTheaterMode, disableFullscreenMode, video } = this.props;
-        const isFullScreen =
-            this.runPrefixMethod(document, 'FullScreen') ||
-            this.runPrefixMethod(document, 'IsFullScreen');
+        const { disableSettings, disableTheaterMode, disableFullscreenMode } = this.props;
+        const { isFullScreen } = this.state;
         return (
             <div className="mkp-right-controls">
                 {/* settings */}
