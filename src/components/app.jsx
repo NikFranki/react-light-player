@@ -7,12 +7,12 @@ const App = () => (
         <Player
             width={640}
             height={360}
-            centered={false}
+            centered={true}
             autoPlay={false}
-            title="pop stars"
+            // title="pop stars"
             disableTheaterMode={false}
             onFullscreenChange={value => console.log(value)}
-            src="http://qiniu.sevenyuan.cn/POP_STARS.mp4"
+            // src="http://qiniu.sevenyuan.cn/POP_STARS.mp4"
         />
     </div>
 );

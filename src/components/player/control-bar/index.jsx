@@ -190,7 +190,10 @@ export default class ControlBar extends Component {
                 isPlay: true,
             },
             () => {
-                video.video.play();
+                video.video && video.video.play();
+                // TODO if not video.video, find video element
+                document.querySelector('.video-stream') &&
+                    document.querySelector('.video-stream').play();
             },
         );
     };
@@ -480,7 +483,6 @@ export default class ControlBar extends Component {
                 {!disablePrev && src instanceof Array && (
                     <a
                         className="mkp-prev-button mkp-button"
-                        title="prev"
                         onClick={this.handlePrev}>
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAABC0lEQVRYR+2W0Q3CIBiE759AN9ANdAQ3UCfRDXQTu+mZS2hTrfWnKlATeOlDm/Dx3RUwzGzYzHhQgbxEqqFqyDPgvf/PDpFkuzIzm7wIkksANzM7/sTQN0Akd4IBsI5ZTNRqPwUieQVwmWI3CRDJbbCiZzeKGCJ5DlbUm4eRFagtLoDDWHGzAZEUhIo7sJI1smBFpVVM7khqaKy476hyADUANq6a8EFSIM0RItNec4qBSg7UQoRSy9aiWGTPEwdbgtoX/+37AGFjVIwDW9kie2FLR8ag8MWAet2ax+H6FKGuH7K1Km6oZ0pHSmNmo+dcd0WJ2T9yfhN1H6pAOQ14c9XIqiHPgPd+dh26A9PikCX0V4VlAAAAAElFTkSuQmCC"
@@ -513,7 +515,6 @@ export default class ControlBar extends Component {
                 {!disableNext && src instanceof Array && (
                     <a
                         className="mkp-next-button mkp-button"
-                        title="next"
                         onClick={this.handleNext}>
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAABTUlEQVRYR+2Wr0tFQRCFz5f9p/wjFDEYxCKCySYWk0WbwazNYDELYjUYDCaDTRBBRIs/GJnHvY/H8+msD3bvFXbizt253549Bxb1rOgZjypQdCNVoapQpEDU/58eMrNV4CA63aS+mZ2368BsNCNJITMzSaeSloHHaOhov9k7WALC/4Uf+KCRoQ+SFoGzVKjcQC3HvqQN4C0CKwXkHDeSFoDr36BKAjmHK7QlaRdwn32r0kAtwEWj1v04UVdAzvEkaQU4KZmyyMPeP5K0BryMJTRL7FOA3FdLwHEfgDxxnjxP4KC68pAnbE/SJvDetYc8Wa6KJ63z2HuiPFmesIlV6sqeJa0Dh5HLSwBdSpoH7iKY3Kb+kLQtaQf4TIHJCXQraQ64SgXJHfsZ4PWvMI1Cw1ciMHw9/jQr6YE2Dci0eypQpFxVqCoUKRD1e+ehLxmsvCUlbbTUAAAAAElFTkSuQmCC"

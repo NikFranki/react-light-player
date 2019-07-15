@@ -149,7 +149,6 @@ export default class Video extends Component {
                 <video
                     ref={node => (this.video = node)}
                     src={src instanceof Array ? src[curPlayIndex]['src'] : src}
-                    // src="//mblock-how-tos.oss-cn-shenzhen.aliyuncs.com/9192612040f711e9aed94ba0a7494a91?type=video/mp4"
                     className={cn(
                         'video-stream',
                         'html5-main-video',

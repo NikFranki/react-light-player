@@ -31,7 +31,7 @@ export default class ReactLightPlayer extends Component {
         autoPlay: false,
         src:
             [
-                { title: 'pop star', src: 'http://qiniu.sevenyuan.cn/POP_STARS.mp4' },
+                { title: 'pop stars', src: 'http://qiniu.sevenyuan.cn/POP_STARS.mp4' },
                 { title: 'league', src: 'http://qiniu.sevenyuan.cn/2019.mp4' },
             ] || 'http://video.pearvideo.com/mp4/short/20170414/cont-1064146-10369519-ld.mp4',
         speeds: ['0.25', '0.5', '0.75', '正常', '1.25', '1.75', '2'],
