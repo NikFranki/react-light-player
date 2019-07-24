@@ -20,13 +20,14 @@ script:
   - yarn build-prod
 
 after_script:
-  - cd ./build
-  - git init
-  - git config user.name "${U_NAME}"
-  - git config user.email "${U_EMAIL}"
-  - git add .
-  - git commit -m "http://franki.sevenyuan.cn/react-light-player/#/"
-  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:${P_BRANCH}
+  # - cd ./build
+  # - git init
+  # - git config user.name "${U_NAME}"
+  # - git config user.email "${U_EMAIL}"
+  # - git add .
+  # - git commit -m "http://franki.sevenyuan.cn/react-light-player/#/"
+  # - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:${P_BRANCH}
+  yarn deploy
 # E: Build LifeCycle
 
 branches:
