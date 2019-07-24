@@ -1,0 +1,42 @@
+language: node_js
+node_js: 
+    - '12'
+
+# Travis-CI Caching
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
+
+# S: Build Lifecycle
+install:
+  - yarn
+
+before_script:
+  - rm -rf build
+
+script:
+  - yarn build-prod
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GH_TOKEN  # Set in the settings page of your repository, as a secure variable
+  keep_history: true
+  on:
+    branch: master
+
+after_script:
+  - cd ./build
+  - git init
+  - git config user.name "${U_NAME}"
+  - git config user.email "${U_EMAIL}"
+  - git add .
+  - git commit -m "http://franki.sevenyuan.cn/react-light-player/#/"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:${P_BRANCH}
+# E: Build LifeCycle
+
+branches:
+  only:
+    - master

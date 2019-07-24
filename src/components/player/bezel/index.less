@@ -1,0 +1,56 @@
+.mkp-bezel-text-hide {
+    display: none;
+    &.active {
+        display: block;
+        .mkp-bezel-text-wrapper {
+            text-align: center;
+            position: absolute;
+            left: 0%;
+            right: 0%;
+            top: 10%;
+            z-index: 19;
+            .mkp-bezel-text {
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 175%;
+                background: rgba(0, 0, 0, 0.5);
+                pointer-events: none;
+                border-radius: 3px;
+            }
+        }
+    }
+    .mkp-bezel {
+        cursor: pointer;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 52px;
+        height: 52px;
+        z-index: 19;
+        margin-left: -26px;
+        margin-top: -26px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 26px;
+        animation: mkp-bezel-fadeout 0.5s linear 1 normal forwards;
+        .mkp-bezel-icon {
+            width: 36px;
+            height: 36px;
+            margin: 8px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            img {
+                width: 24px;
+            }
+        }
+        @keyframes mkp-bezel-fadeout {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+    }
+}
