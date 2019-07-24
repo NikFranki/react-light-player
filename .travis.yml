@@ -20,7 +20,7 @@ script:
   - yarn build-prod
 
 after_script:
-  - cd build/prod
+  - cd ./build
   - git init
   - git config user.name "${U_NAME}"
   - git config user.email "${U_EMAIL}"
