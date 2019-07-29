@@ -69,7 +69,7 @@ export default class ReactLightPlayer extends Component {
             if (this.state.showSettingItems) {
                 return;
             }
-            // this.mkpChromeBottom.setState({ isShowMkpChromeBottom: false });
+            this.mkpChromeBottom.setState({ isShowMkpChromeBottom: false });
             this.mkpChromeTop.setState({ isShowMkpChromeTop: false });
             this.video.video.style.cursor = 'none';
         }, 7000);

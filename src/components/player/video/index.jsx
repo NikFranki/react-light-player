@@ -15,6 +15,30 @@ export default class Video extends Component {
         isVideoMode: false,
     };
 
+    componentDidMount() {
+        const clickTimeout = {
+            _timeout: null,
+            set: function(fn) {
+                this.clear();
+                this._timeout = setTimeout(() => {
+                    fn();
+                }, 300);
+            },
+            clear: function() {
+                if (this._timeout) {
+                    clearTimeout(this._timeout);
+                }
+            },
+        };
+        this.video.addEventListener('click', () => {
+            clickTimeout.set(this.playOrPauseVide);
+        }, false);
+
+        this.video.addEventListener('dblclick', () => {
+            clickTimeout.set(this.handleDbClick);
+        }, false);
+    }
+
     resetPlay = isPlay => {
         this.setState({
             duration: 0,
@@ -138,6 +162,11 @@ export default class Video extends Component {
         console.log('load error');
     };
 
+    handleDbClick = () => {
+        const { mkpChromeBottom } = this.props;
+        mkpChromeBottom.reqFullscreenOrExitFullscreen();
+    };
+
     render() {
         const { src, curPlayIndex, preload, poster, isEnd } = this.props;
 
@@ -155,7 +184,6 @@ export default class Video extends Component {
                         `${isEnd ? 'play-end' : ''}`,
                         `${isVideoMode ? 'video-mode' : ''}`,
                     )}
-                    onClick={this.playOrPauseVide}
                     onLoadStart={this.handleLoadStart}
                     onCanPlay={this.handleCanplay}
                     onLoadedData={this.handleLoadedData}

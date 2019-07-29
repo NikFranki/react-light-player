@@ -96,3 +96,58 @@
         }
     }
 }
+
+.mkp-tooltip {
+    position: absolute;
+    top: -2px;
+    min-width: 30px;
+    max-width: 200px;
+    line-height: 1;
+    padding: 6px 8px;
+    background-color: rgba(0,0,0,0.75);
+    border-radius: 4px;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(-32px);
+    transition: all ease .3s;
+    pointer-events: none;
+    &.active {
+        opacity: 1;
+        transform: translateY(-35px);
+    }
+}
+
+.mkp-theater-tooltip:extend(.mkp-tooltip all) {
+    right: 21px;
+}
+
+.mkp-fullscreen-tooltip:extend(.mkp-tooltip all) {
+    right: 12px;
+}
+
+.mkp-settings-tooltip:extend(.mkp-tooltip all) {
+    right: 66px;
+}
+
+:-webkit-full-screen {
+    .mkp-settings-tooltip:extend(.mkp-tooltip all) {
+        right: 32px;
+    }
+}
+
+.mkp-volume-tooltip:extend(.mkp-tooltip all) {
+    left: 111px;
+}
+
+.mkp-next-tooltip:extend(.mkp-tooltip all) {
+    left: 83px;
+}
+
+.mkp-play-tooltip:extend(.mkp-tooltip all) {
+    left: 48px;
+}
+
+.mkp-prev-tooltip:extend(.mkp-tooltip all) {
+    left: 12px;
+}
+
